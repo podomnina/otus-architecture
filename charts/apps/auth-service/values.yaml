@@ -1,0 +1,20 @@
+service:
+  port: 8080
+
+replicaCount: 1
+
+auth_service:
+  image: podomnina/auth-service:3
+  config:
+    db:
+      url: jdbc:postgresql://otus-postgres-postgres:5432/otus
+      secretName: auth-service-pg-secret
+      username: otus_user
+      password: NVB1c6hB6vF7
+resources:
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1024Mi"

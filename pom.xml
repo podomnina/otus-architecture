@@ -13,30 +13,16 @@
 	<version>1.0.0-SNAPSHOT</version>
 	<name>otus-architecture</name>
 	<description>OTUS architecture project</description>
+	<packaging>pom</packaging>
 
-	<properties>
-		<java.version>17</java.version>
-	</properties>
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
+	<modules>
+		<module>parent-pom</module>
+		<module>parent-pom/lib-parent</module>
+		<module>parent-pom/ms-parent</module>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
+		<module>lib/auth-service-api/auth-service-api</module>
 
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-		</plugins>
-	</build>
-
+		<module>ms/auth-service/auth-service-db</module>
+		<module>ms/auth-service/auth-service</module>
+	</modules>
 </project>
