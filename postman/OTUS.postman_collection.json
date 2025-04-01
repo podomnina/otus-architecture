@@ -55,6 +55,68 @@
 					"response": []
 				},
 				{
+					"name": "Создать пользователя пользователя",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function() {\r",
+									"   pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"if (responseBody != null && responseBody != undefined) {\r",
+									"    var data = JSON.parse(responseBody);\r",
+									"    var id = data.id;\r",
+									"    pm.collectionVariables.set(\"user-id\", id);\r",
+									"}"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Host",
+								"value": "arch.homework",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"lastName\": \"Иванов\",\r\n    \"firstName\": \"Иван\",\r\n    \"secondName\": \"Иванович\",\r\n    \"email\": \"ivanov@mail.ru\",\r\n    \"restaurantId\": \"235ad3a0-49d4-4852-99b0-9ab1ec6174f3\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:80/api/v1/user",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "80",
+							"path": [
+								"api",
+								"v1",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Получить пользователя по id",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
@@ -144,68 +206,6 @@
 					"response": []
 				},
 				{
-					"name": "Создать пользователя пользователя",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code is 200\", function() {\r",
-									"   pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"if (responseBody != null && responseBody != undefined) {\r",
-									"    var data = JSON.parse(responseBody);\r",
-									"    var id = data.id;\r",
-									"    pm.collectionVariables.set(\"user-id\", id);\r",
-									"}"
-								],
-								"type": "text/javascript",
-								"packages": {}
-							}
-						}
-					],
-					"request": {
-						"auth": {
-							"type": "noauth"
-						},
-						"method": "POST",
-						"header": [
-							{
-								"key": "Host",
-								"value": "arch.homework",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"lastName\": \"Иванов\",\r\n    \"firstName\": \"Иван\",\r\n    \"secondName\": \"Иванович\",\r\n    \"email\": \"ivanov@mail.ru\",\r\n    \"restaurantId\": \"235ad3a0-49d4-4852-99b0-9ab1ec6174f3\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "http://127.0.0.1:80/api/v1/user",
-							"protocol": "http",
-							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
-							],
-							"port": "80",
-							"path": [
-								"api",
-								"v1",
-								"user"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Удалить пользователя",
 					"request": {
 						"auth": {
@@ -287,7 +287,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://127.0.0.1:80/health",
+							"raw": "http://127.0.0.1:80/actuator/health",
 							"protocol": "http",
 							"host": [
 								"127",
@@ -297,6 +297,7 @@
 							],
 							"port": "80",
 							"path": [
+								"actuator",
 								"health"
 							]
 						}
