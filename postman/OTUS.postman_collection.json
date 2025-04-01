@@ -23,7 +23,8 @@
 							{
 								"key": "Host",
 								"value": "arch.homework",
-								"type": "text"
+								"type": "text",
+								"disabled": true
 							}
 						],
 						"body": {
@@ -36,15 +37,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:80/api/v1/user",
+							"raw": "http://arch.homework/api/v1/user",
 							"protocol": "http",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"arch",
+								"homework"
 							],
-							"port": "80",
 							"path": [
 								"api",
 								"v1",
@@ -98,15 +96,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:80/api/v1/user",
+							"raw": "http://arch.homework/api/v1/user",
 							"protocol": "http",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"arch",
+								"homework"
 							],
-							"port": "80",
 							"path": [
 								"api",
 								"v1",
@@ -143,15 +138,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:80/api/v1/user/{{user-id}}",
+							"raw": "http://arch.homework/api/v1/user/{{user-id}}",
 							"protocol": "http",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"arch",
+								"homework"
 							],
-							"port": "80",
 							"path": [
 								"api",
 								"v1",
@@ -186,15 +178,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:80/api/v1/user/{{user-id}}",
+							"raw": "http://arch.homework/api/v1/user/{{user-id}}",
 							"protocol": "http",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"arch",
+								"homework"
 							],
-							"port": "80",
 							"path": [
 								"api",
 								"v1",
@@ -229,15 +218,12 @@
 							}
 						},
 						"url": {
-							"raw": "http://127.0.0.1:80/api/v1/user/{{user-id}}",
+							"raw": "http://arch.homework/api/v1/user/{{user-id}}",
 							"protocol": "http",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"arch",
+								"homework"
 							],
-							"port": "80",
 							"path": [
 								"api",
 								"v1",
@@ -287,15 +273,12 @@
 							}
 						],
 						"url": {
-							"raw": "http://127.0.0.1:80/actuator/health",
+							"raw": "http://arch.homework/actuator/health",
 							"protocol": "http",
 							"host": [
-								"127",
-								"0",
-								"0",
-								"1"
+								"arch",
+								"homework"
 							],
-							"port": "80",
 							"path": [
 								"actuator",
 								"health"
