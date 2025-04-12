@@ -51,3 +51,29 @@ kubectl apply -f ingress.yaml
 
 ### Для доступа до БД по localhost
 `kubectl port-forward svc/otus-postgres-postgres 5432:5432`
+
+## 4. Prometheus. Grafana
+### Установить Prometheus
+```
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus prometheus-community/prometheus --namespace monitoring --create-namespace
+```
+### Для доступа до Prometheus
+`kubectl port-forward svc/prometheus-server 9090:80 -n monitoring`
+
+### Установить Grafana
+```
+helm repo add grafana https://grafana.github.io/helm-charts
+helm repo update
+helm install grafana grafana/grafana -n monitoring
+```
+### Получить временный пароль
+`kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo`
+`WgFNuB3OJpM1heLa5sS2DmNKhozqVvs5KoFpLgpy`
+### Для доступа до Grafana
+`kubectl port-forward svc/grafana 3000:80 -n monitoring`
+### Добавить сбор метрик с nginx
+`helm upgrade --install nginx ingress-nginx/ingress-nginx --namespace otus -f ./charts/ingress/values.yaml`
+`helm upgrade prometheus prometheus-community/prometheus --namespace monitoring -f ./charts/monitoring/prometheus-values.yaml`
+

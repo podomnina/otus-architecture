@@ -24,3 +24,24 @@ db:
   url:
   username:
   password:
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health, metrics
+  metrics:
+    enable:
+      timed: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+  prometheus:
+    metrics:
+      export:
+        enabled: true
