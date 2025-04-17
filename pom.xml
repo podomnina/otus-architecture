@@ -20,9 +20,12 @@
 		<module>parent-pom/lib-parent</module>
 		<module>parent-pom/ms-parent</module>
 
-		<module>lib/auth-service-api/auth-service-api</module>
+		<module>common</module>
+
+		<module>lib/auth-service-api/auth-shared</module>
 
 		<module>ms/auth-service/auth-service-db</module>
 		<module>ms/auth-service/auth-service</module>
+		<module>ms/auth-gateway/auth-gateway</module>
 	</modules>
 </project>
