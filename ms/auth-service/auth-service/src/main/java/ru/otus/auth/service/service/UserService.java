@@ -5,16 +5,24 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.otus.auth.service.mapper.UserMapper;
-import ru.otus.auth.service.model.dto.CreateUserRequestDto;
-import ru.otus.auth.service.model.dto.UpdateUserRequestDto;
-import ru.otus.auth.service.model.dto.UserListResponseDto;
-import ru.otus.auth.service.model.dto.UserResponseDto;
+import ru.otus.auth.service.model.dto.user.CreateUserRequestDto;
+import ru.otus.auth.service.model.dto.user.UpdateUserRequestDto;
+import ru.otus.auth.service.model.dto.user.UserListResponseDto;
+import ru.otus.auth.service.model.dto.user.UserResponseDto;
 import ru.otus.auth.service.model.entity.User;
+import ru.otus.auth.service.repository.IdentifierRepository;
 import ru.otus.auth.service.repository.UserRepository;
+import ru.otus.auth.shared.model.AuthContext;
+import ru.otus.auth.shared.model.UserCtx;
 
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.UUID;
 
 @Slf4j
@@ -24,6 +32,7 @@ public class UserService {
 
     private final UserRepository repository;
     private final UserMapper mapper;
+    private final IdentifierRepository identifierRepository;
 
     @Transactional
     public UserResponseDto create(CreateUserRequestDto dto) {
@@ -42,13 +51,22 @@ public class UserService {
     }
 
     @Transactional
-    public UserResponseDto getById(UUID id) {
+    public UserResponseDto getById(UUID id, UserCtx userCtx) {
+        if (!Objects.equals(userCtx.getId(), id)) {
+            log.error("Profile viewing is denied for user with id: {}", id);
+            throw new AccessDeniedException("Profile viewing is forbidden");
+        }
         var user = getUser(id);
         return mapper.toDto(user);
     }
 
     @Transactional
-    public UserResponseDto update(UUID id, UpdateUserRequestDto dto) {
+    public UserResponseDto update(UUID id, UpdateUserRequestDto dto, UserCtx userCtx) {
+        if (!Objects.equals(userCtx.getId(), id)) {
+            log.error("Profile update is denied for user with id: {}", id);
+            throw new AccessDeniedException("Profile viewing is forbidden");
+        }
+
         var user = getUser(id);
 
         if (dto.getLastName() != null) {
@@ -99,6 +117,29 @@ public class UserService {
             log.error("User with id {} not found", id);
             throw new NoSuchElementException("User with id " + id + " not found"); //todo process exception
         }
+    }
+
+    public UserDetailsService userDetailsService() {
+        return this::getByLogin;
+    }
+
+    public AuthContext getByLogin(String login) {
+        var identifier = identifierRepository.findByLogin(login);
+        if (identifier == null) {
+            log.error("Identifier with login {} not found", login);
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        var user = repository.findById(identifier.getUserId());
+        if (user == null || user.isEmpty()) {
+            log.error("User with login {} not found", login);
+            throw new UsernameNotFoundException("User not found");
+        }
+
+        var authContext = mapper.toCtx(user.get());
+        authContext.setLogin(identifier.getLogin());
+        authContext.setPassword(identifier.getSecret());
+        return authContext;
     }
 
 }

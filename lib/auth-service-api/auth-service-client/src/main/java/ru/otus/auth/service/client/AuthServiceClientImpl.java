@@ -3,12 +3,10 @@ package ru.otus.auth.service.client;
 import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import ru.otus.auth.service.api.client.AuthServiceClient;
-import ru.otus.auth.service.api.dto.AuthServiceRequestDto;
-import ru.otus.auth.service.api.model.AuthContext;
+import ru.otus.auth.shared.model.AuthContext;
 
 @Component
-public class AuthServiceClientImpl implements AuthServiceClient {
+public class AuthServiceClientImpl {
 
     private RestClient client;
 
@@ -19,10 +17,9 @@ public class AuthServiceClientImpl implements AuthServiceClient {
                 .build();
     }
 
-    @Override
-    public AuthContext authenticate(AuthServiceRequestDto dto) {
+    public AuthContext authenticate(Object dto) {
         return client.get()
-                .uri(AuthServiceClient.AUTHENTICATE_BASE_URL)
+                .uri("")
                 .retrieve()
                 .body(AuthContext.class);
     }

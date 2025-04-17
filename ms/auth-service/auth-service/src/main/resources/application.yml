@@ -25,6 +25,12 @@ db:
   username:
   password:
 
+jwt:
+  secret: FBB218A641D039B8AC94C165B32F883A13390DE0EA330D8566A67D108FA3BD51E6ED44957C8F7C645D61CE431E2AF23793DDB225129DE65960A896DCC3D89DDF
+  expirationInMs: 600000
+  refreshSecret: FBB218A641D039B8AC94C165B32F883A13390DE0EA330D8566A67D108FA3BD51E6ED44957C8F7C645D61CE431E2AF23793DDB225129DE65960A896DCC3D89DDF
+  refreshExpirationInMs: -1
+
 management:
   endpoints:
     web:
@@ -45,3 +51,8 @@ management:
     metrics:
       export:
         enabled: true
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG

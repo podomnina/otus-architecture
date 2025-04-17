@@ -1,0 +1,19 @@
+service:
+  port: 8080
+
+replicaCount: 1
+
+auth_gateway:
+  image: podomnina/auth-gateway:7
+  config:
+    jwt:
+      secretName: auth-jwt-secret
+      expirationInMs: 600000
+      value: FBB218A641D039B8AC94C165B32F883A13390DE0EA330D8566A67D108FA3BD51E6ED44957C8F7C645D61CE431E2AF23793DDB225129DE65960A896DCC3D89DDF
+resources:
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1024Mi"

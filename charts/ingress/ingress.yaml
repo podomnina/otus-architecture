@@ -15,6 +15,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: auth-service-service
+                name: auth-gateway
                 port:
                   name: http

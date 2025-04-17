@@ -1,16 +1,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-service
+  name: {{ .Release.Name }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Release.Name }}-service
+      app: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ .Release.Name }}-service
+        app: {{ .Release.Name }}
     spec:
       containers:
         - name: {{ .Chart.Name }}
@@ -43,6 +43,25 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.auth_service.config.db.secretName }}
                   key: password
+
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth_service.config.jwt.secretName }}
+                  key: secret
+
+            - name: JWT_EXPIRATIONINMS
+              value: {{ .Values.auth_service.config.jwt.expirationInMs | quote }}
+
+            - name: JWT_REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth_service.config.jwt.refreshSecretName }}
+                  key: secret
+
+            - name: JWT_REFRESHEXPIRATIONINMS
+              value: {{ .Values.auth_service.config.jwt.refreshExpirationInMs | quote }}
+
           ports:
             - name: http
               containerPort: {{ .Values.service.port }}

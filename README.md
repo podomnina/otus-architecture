@@ -1,6 +1,6 @@
 # Microservice Architecture Домашние задания
 
-## 1. Основы работы с Docker
+## 2. Основы работы с Docker
 ### Собрать проект
 `mvn package`
 ### Собрать docker образ
@@ -10,7 +10,7 @@
 ### Запушить образ
 `docker push podomnina/otus-architecture:task1`
 
-## 2. Основы работы с Kubernetes
+## 3. Основы работы с Kubernetes
 ### Запустить minikube
 `minikube start --cpus=4 --memory=8192`
 ### Создать namespace
@@ -30,7 +30,7 @@ curl --location 'http://127.0.0.1:80/health' \
 --header 'Host: arch.homework'
 ```
 
-## 3. Работа с Helm-ом
+## 4. Работа с Helm-ом
 ### Запустить minikube
 `minikube start --cpus=4 --memory=8192`
 ### Создать namespace
@@ -52,7 +52,7 @@ kubectl apply -f ingress.yaml
 ### Для доступа до БД по localhost
 `kubectl port-forward svc/otus-postgres-postgres 5432:5432`
 
-## 4. Prometheus. Grafana
+## 5. Prometheus. Grafana
 ### Установить Prometheus
 ```
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
@@ -77,3 +77,28 @@ helm install grafana grafana/grafana -n monitoring
 `helm upgrade --install nginx ingress-nginx/ingress-nginx --namespace otus -f ./charts/ingress/values.yaml`
 `helm upgrade prometheus prometheus-community/prometheus --namespace monitoring -f ./charts/monitoring/prometheus-values.yaml`
 
+## 6. Backend for frontends. Apigateway
+### Собрать проект
+`mvn package`
+### Собрать и запушить docker образы приложений
+```
+docker image build --platform linux/amd64 -t podomnina/auth-service:7 .
+docker image build --platform linux/amd64 -t podomnina/auth-gateway:7 .
+docker push podomnina/auth-service:7
+docker push podomnina/auth-gateway:7
+```
+### Обновить сервисы в minikube
+```
+helm upgrade -i auth-gateway ./charts/apps/auth-gateway --namespace otus --atomic -f ./charts/apps/auth-gateway/values.yaml
+helm upgrade -i auth-service ./charts/apps/auth-service --namespace otus --atomic -f ./charts/apps/auth-service/values.yaml
+```
+### Установить nginx
+```
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx/
+helm repo update
+helm install nginx ingress-nginx/ingress-nginx --namespace otus -f nginx-ingress.yaml
+kubectl apply -f ./charts/ingress/ingress.yaml
+helm upgrade -i nginx ingress-nginx/ingress-nginx --namespace otus -f ./charts/ingress/values.yaml
+```
+### Запустить postman коллекцию
+`newman run ./postman/OTUS.postman_collection.json --folder "19. Backend for frontends"`

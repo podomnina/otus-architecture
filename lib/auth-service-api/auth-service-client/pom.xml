@@ -20,7 +20,7 @@
         </dependency>
         <dependency>
             <groupId>ru.otus</groupId>
-            <artifactId>auth-service-api</artifactId>
+            <artifactId>auth-shared</artifactId>
         </dependency>
     </dependencies>
 </project>

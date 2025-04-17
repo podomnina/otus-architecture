@@ -1,9 +1,48 @@
 spring:
   application:
     name: auth-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: auth-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/auth/**
+        - id: reg-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/v1/register/**
+        - id: user-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/v1/user/**
 
-ru:
-  otus:
-    auth:
-      security:
-        jwt-secret: FBB218A641D039B8AC94C165B32F883A13390DE0EA330D8566A67D108FA3BD51E6ED44957C8F7C645D61CE431E2AF23793DDB225129DE65960A896DCC3D89DDF
+jwt:
+  secret: FBB218A641D039B8AC94C165B32F883A13390DE0EA330D8566A67D108FA3BD51E6ED44957C8F7C645D61CE431E2AF23793DDB225129DE65960A896DCC3D89DDF
+  expirationInMs: 30000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health, metrics
+  metrics:
+    enable:
+      timed: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+
+logging:
+  level:
+    org.springframework.security: DEBUG
