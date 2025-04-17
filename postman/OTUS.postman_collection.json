@@ -314,7 +314,9 @@
 									"if (requestBody != null && requestBody != undefined) {\r",
 									"    pm.collectionVariables.set(\"user-login\", requestBody.email);\r",
 									"    pm.collectionVariables.set(\"user-password\", requestBody.password);\r",
-									"}"
+									"}\r",
+									"\r",
+									"console.log(\"Authorization header:\", pm.request.headers.get(\"Authorization\"));"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -356,7 +358,9 @@
 								"exec": [
 									"pm.test(\"Status code is 401\", function() {\r",
 									"   pm.response.to.have.status(401);\r",
-									"});"
+									"});\r",
+									"\r",
+									"console.log(\"Authorization header:\", pm.request.headers.get(\"Authorization\"));"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -405,7 +409,9 @@
 									"    var data = JSON.parse(responseBody);\r",
 									"    var token = data.token;\r",
 									"    pm.collectionVariables.set(\"token\", token);\r",
-									"}"
+									"}\r",
+									"\r",
+									"console.log(\"Authorization header:\", pm.request.headers.get(\"Authorization\"));"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -454,7 +460,8 @@
 									"pm.test(\"Second name is changed\", function() {\r",
 									"    pm.expect(responseJson.secondName).to.eql(requestBody.secondName);\r",
 									"});\r",
-									""
+									"\r",
+									"console.log(\"Authorization header:\", pm.request.headers.get(\"Authorization\"));"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -508,7 +515,7 @@
 									"pm.test(\"Status code is 200\", function() {\r",
 									"   pm.response.to.have.status(200);\r",
 									"});\r",
-									""
+									"console.log(\"Authorization header:\", pm.request.headers.get(\"Authorization\"));"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -577,7 +584,9 @@
 									"if (requestBody != null && requestBody != undefined) {\r",
 									"    pm.collectionVariables.set(\"user-login-2\", requestBody.email);\r",
 									"    pm.collectionVariables.set(\"user-password-2\", requestBody.password);\r",
-									"}"
+									"}\r",
+									"\r",
+									"console.log(\"Authorization header:\", pm.request.headers.get(\"Authorization\"));"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -625,7 +634,9 @@
 									"    var data = JSON.parse(responseBody);\r",
 									"    var token = data.token;\r",
 									"    pm.collectionVariables.set(\"token-2\", token);\r",
-									"}"
+									"}\r",
+									"\r",
+									"console.log(\"Authorization header:\", pm.request.headers.get(\"Authorization\"));"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -667,7 +678,9 @@
 								"exec": [
 									"pm.test(\"Status code is 403\", function() {\r",
 									"   pm.response.to.have.status(403);\r",
-									"});"
+									"});\r",
+									"\r",
+									"console.log(\"Authorization header:\", pm.request.headers.get(\"Authorization\"));"
 								],
 								"type": "text/javascript",
 								"packages": {}
@@ -723,7 +736,8 @@
 								"exec": [
 									"pm.test(\"Status code is 403\", function() {\r",
 									"   pm.response.to.have.status(403);\r",
-									"});"
+									"});\r",
+									"console.log(\"Authorization header:\", pm.request.headers.get(\"Authorization\"));"
 								],
 								"type": "text/javascript",
 								"packages": {}
