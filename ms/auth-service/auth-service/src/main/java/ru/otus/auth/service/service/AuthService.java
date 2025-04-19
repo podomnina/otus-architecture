@@ -6,7 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 import ru.otus.auth.service.model.dto.auth.AuthRefreshRequestDto;
-import ru.otus.auth.shared.model.UserCtx;
+import ru.otus.common.error.UserCtx;
 import ru.otus.auth.shared.service.JwtService;
 import ru.otus.auth.service.model.dto.auth.AuthRequestDto;
 import ru.otus.auth.shared.model.AuthContext;

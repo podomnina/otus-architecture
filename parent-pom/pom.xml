@@ -88,12 +88,6 @@
                 <version>${postgresql.version}</version>
             </dependency>
 
-
-            <dependency>
-                <groupId>ru.otus</groupId>
-                <artifactId>auth-service-db</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>ru.otus</groupId>
                 <artifactId>auth-shared</artifactId>
@@ -102,6 +96,76 @@
             <dependency>
                 <groupId>ru.otus</groupId>
                 <artifactId>common</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>lib-exception</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>auth-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>inventory-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>menu-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>order-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>payment-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>inventory-service-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>inventory-service-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>menu-service-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>menu-service-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>notification-service-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>notification-service-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>lib-redis</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

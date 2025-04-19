@@ -6,7 +6,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -18,8 +17,9 @@ import ru.otus.auth.service.model.dto.user.UserResponseDto;
 import ru.otus.auth.service.model.entity.User;
 import ru.otus.auth.service.repository.IdentifierRepository;
 import ru.otus.auth.service.repository.UserRepository;
+import ru.otus.auth.service.repository.UserRoleRepository;
 import ru.otus.auth.shared.model.AuthContext;
-import ru.otus.auth.shared.model.UserCtx;
+import ru.otus.common.error.UserCtx;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -33,6 +33,7 @@ public class UserService {
     private final UserRepository repository;
     private final UserMapper mapper;
     private final IdentifierRepository identifierRepository;
+    private final UserRoleRepository userRoleRepository;
 
     @Transactional
     public UserResponseDto create(CreateUserRequestDto dto) {
@@ -136,9 +137,12 @@ public class UserService {
             throw new UsernameNotFoundException("User not found");
         }
 
+        var roles = userRoleRepository.findRoleNamesByUserId(identifier.getUserId());
+
         var authContext = mapper.toCtx(user.get());
         authContext.setLogin(identifier.getLogin());
         authContext.setPassword(identifier.getSecret());
+        authContext.setRoles(roles);
         return authContext;
     }
 

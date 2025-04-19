@@ -1,4 +1,4 @@
-package ru.otus.auth.service.config;
+package ru.otus.lib.exception;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;

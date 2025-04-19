@@ -10,7 +10,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
-import ru.otus.auth.shared.model.UserCtx;
+import ru.otus.common.error.UserCtx;
 
 import java.security.Key;
 import java.util.Date;
@@ -52,7 +52,7 @@ public class JwtService {
         var expiration = expirationTime != -1 ? new Date(System.currentTimeMillis() + expirationTime) : null;
         return Jwts.builder()
                 .setSubject(subject)
-                //.claim("roles", roles) todo add roles
+                .claim("roles", userCtx.getRoles())
                 .setIssuedAt(new Date())
                 .setExpiration(expiration)
                 .signWith(key)

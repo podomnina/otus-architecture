@@ -15,6 +15,7 @@ public class AuthContext implements UserDetails {
     private UUID restaurantId;
     private String restaurantCode;
     private String password;
+    private List<String> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

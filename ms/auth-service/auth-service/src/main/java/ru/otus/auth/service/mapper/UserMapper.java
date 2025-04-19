@@ -2,13 +2,12 @@ package ru.otus.auth.service.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.springframework.security.core.userdetails.UserDetails;
 import ru.otus.auth.shared.model.AuthContext;
 import ru.otus.auth.service.model.dto.auth.UserDto;
 import ru.otus.auth.service.model.dto.user.CreateUserRequestDto;
 import ru.otus.auth.service.model.dto.user.UserResponseDto;
 import ru.otus.auth.service.model.entity.User;
-import ru.otus.auth.shared.model.UserCtx;
+import ru.otus.common.error.UserCtx;
 
 import java.util.List;
 

@@ -29,6 +29,7 @@ public class GatewaySecurityConfig {
                         .pathMatchers("/auth/login/pwd").permitAll()
                         .pathMatchers("/auth/login/token").permitAll()
                         .pathMatchers("/api/v1/register").permitAll()
+                        .pathMatchers("/api/v1/menu/actual").permitAll()
                         .anyExchange().authenticated()
                 )
                 .addFilterAt(jwtAuthFilter, SecurityWebFiltersOrder.AUTHENTICATION)

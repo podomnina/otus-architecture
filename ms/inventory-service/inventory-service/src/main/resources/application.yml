@@ -1,0 +1,47 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: inventory-service
+  datasource:
+    url: ${db.url}
+    username: ${db.username}
+    password: ${db.password}
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    url: ${db.url}
+    user: ${db.username}
+    password: ${db.password}
+    locations:
+      - classpath:db
+    schemas:
+      - inventory
+
+db:
+  url:
+  username:
+  password:
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health, metrics
+  metrics:
+    enable:
+      timed: true
+    distribution:
+      percentiles-histogram:
+        "[http.server.requests]": true
+    export:
+      prometheus:
+        enabled: true
+    tags:
+      application: ${spring.application.name}
+  prometheus:
+    metrics:
+      export:
+        enabled: true
