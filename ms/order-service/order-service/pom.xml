@@ -38,6 +38,10 @@
             <groupId>ru.otus</groupId>
             <artifactId>lib-kafka</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ru.otus</groupId>
+            <artifactId>lib-ctx</artifactId>
+        </dependency>
     </dependencies>
 
 

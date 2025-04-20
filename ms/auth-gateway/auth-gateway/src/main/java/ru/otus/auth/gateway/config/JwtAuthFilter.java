@@ -1,6 +1,7 @@
 package ru.otus.auth.gateway.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.io.Encoders;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +26,7 @@ public class JwtAuthFilter implements WebFilter {
 
     public static final String BEARER_PREFIX = "Bearer ";
     public static final String HEADER_NAME = "Authorization";
+    public static final String JWT_PAYLOAD_HEADER = "X-Jwt-Payload";
 
     private static final String UNAUTHORIZED = "unauthorized";
 
@@ -56,14 +58,20 @@ public class JwtAuthFilter implements WebFilter {
             }
 
             var userCtx = jwtService.getUserCtxFromToken(jwt);
+            var payload = Encoders.BASE64.encode(objectMapper.writeValueAsBytes(userCtx));
+
+            var modifiedRequest = exchange.getRequest().mutate()
+                    .header(HEADER_NAME, authHeader)
+                    .header(JWT_PAYLOAD_HEADER, payload)
+                    .build();
 
             Authentication auth = new UsernamePasswordAuthenticationToken(
                     userCtx,
                     null,
-                    null //todo jwtService.extractAuthorities(token)
+                    jwtService.extractAuthorities(jwt)
             );
 
-            return chain.filter(exchange)
+            return chain.filter(exchange.mutate().request(modifiedRequest).build())
                     .contextWrite(ReactiveSecurityContextHolder.withAuthentication(auth));
         }
 

@@ -6,6 +6,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.common.UserCtx;
+import ru.otus.lib.ctx.UserContext;
 import ru.otus.payment.service.model.dto.AccountResponseDto;
 import ru.otus.payment.service.model.dto.FillUpAccountRequestDto;
 import ru.otus.payment.service.service.AccountService;
@@ -22,14 +23,14 @@ public class AccountController {
     private final AccountService service;
 
     @GetMapping
-    public AccountResponseDto get(@AuthenticationPrincipal UserCtx userCtx) {
+    public AccountResponseDto get(@UserContext UserCtx userCtx) {
         var userId = userCtx.getId();
         log.debug("Trying to check account info by user with id: {}", userId);
         return service.get(userId);
     }
 
     @PostMapping("/fill-up")
-    public AccountResponseDto fillUp(@AuthenticationPrincipal UserCtx userCtx,
+    public AccountResponseDto fillUp(@UserContext UserCtx userCtx,
                                      @RequestBody FillUpAccountRequestDto dto) {
         var userId = userCtx.getId();
         log.debug("Trying to fill up account info by user with id: {}", userId);

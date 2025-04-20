@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import ru.otus.lib.kafka.model.CreateAccountModel;
 import ru.otus.lib.kafka.model.PaymentProcessModel;
 import ru.otus.lib.kafka.service.BusinessTopics;
 
@@ -18,5 +19,11 @@ public class PaymentKafkaConsumerService {
     public void listenOrderPaymentProcess(PaymentProcessModel model) {
         log.debug("Received new payment process: {}", model);
         service.handlePaymentProcess(model);
+    }
+
+    @KafkaListener(topics = BusinessTopics.PAYMENT_NEW_ACCOUNT, groupId = "${spring.kafka.consumer.group-id}")
+    public void listenNewAccount(CreateAccountModel model) {
+        log.debug("Received new account creation: {}", model);
+        service.handleCreateAccount(model);
     }
 }

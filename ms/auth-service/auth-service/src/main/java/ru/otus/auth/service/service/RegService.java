@@ -16,6 +16,9 @@ import ru.otus.auth.service.repository.RoleRepository;
 import ru.otus.auth.service.repository.UserRepository;
 import ru.otus.auth.service.repository.UserRoleRepository;
 import ru.otus.common.Roles;
+import ru.otus.lib.kafka.model.CreateAccountModel;
+import ru.otus.lib.kafka.service.BusinessTopics;
+import ru.otus.lib.kafka.service.KafkaProducerService;
 
 @Slf4j
 @Service
@@ -26,6 +29,7 @@ public class RegService {
     private final IdentifierRepository identifierRepository;
     private final UserRoleRepository userRoleRepository;
     private final RoleRepository roleRepository;
+    private final KafkaProducerService kafkaProducerService;
 
     private final RegisterMapper mapper;
     private final PasswordEncoder passwordEncoder;
@@ -54,6 +58,8 @@ public class RegService {
             userRole.setRole(clientRole.get());
             userRoleRepository.save(userRole);
         }
+
+        kafkaProducerService.send(BusinessTopics.PAYMENT_NEW_ACCOUNT, new CreateAccountModel(createdUser.getId()));
 
         return new RegResponseDto(createdUser.getId());
     }

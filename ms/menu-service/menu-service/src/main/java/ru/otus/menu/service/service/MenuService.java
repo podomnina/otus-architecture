@@ -1,10 +1,12 @@
 package ru.otus.menu.service.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import ru.otus.inventory.lib.api.InventoryServiceClient;
+import ru.otus.inventory.lib.api.ProductBalanceResponseDto;
 import ru.otus.menu.lib.api.RecipeResponseDto;
 import ru.otus.menu.lib.api.DishResponseDto;
 import ru.otus.menu.service.mapper.MenuMapper;
@@ -30,8 +32,9 @@ public class MenuService {
     private final DishProductRepository dishProductRepository;
     private final InventoryServiceClient inventoryServiceClient;
 
+    @Transactional
     public MenuListResponseDto getActualMenu() {
-        var dishes = repository.findAll();
+        var dishes = repository.findAllWithProducts();
         if (CollectionUtils.isEmpty(dishes)) {
             log.warn("No dishes info");
             return new MenuListResponseDto();
@@ -43,6 +46,7 @@ public class MenuService {
         return menu;
     }
 
+    @Transactional
     public DishResponseDto getById(UUID dishId, Integer quantity) {
         var dish = repository.findById(dishId);
         if (dish.isEmpty()) {
@@ -54,6 +58,7 @@ public class MenuService {
         return mapper.mapDish(filteredDish.get(0)); //todo check!!!
     }
 
+    @Transactional
     public List<RecipeResponseDto> getRecipes(List<UUID> dishIds) {
         var dishProducts = dishProductRepository.findAllByDishIds(dishIds);
         if (CollectionUtils.isEmpty(dishProducts)) {
@@ -86,7 +91,13 @@ public class MenuService {
                 ));
         var productIds = productQuantityMap.keySet();
 
-        var actualBalance = inventoryServiceClient.getActualBalance(new ArrayList<>(productIds));
+        ProductBalanceResponseDto actualBalance = null;
+        try {
+            actualBalance = inventoryServiceClient.getActualBalance(new ArrayList<>(productIds));
+        } catch (Exception e) {
+            log.error("Error while getting actual balance from inventory-service. Skip the result");
+        }
+
         if (actualBalance == null || CollectionUtils.isEmpty(actualBalance.getBalance())) {
             log.warn("No data about current product balance");
             return dishes;

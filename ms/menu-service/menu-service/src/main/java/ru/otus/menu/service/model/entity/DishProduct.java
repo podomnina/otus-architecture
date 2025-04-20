@@ -8,7 +8,8 @@ import lombok.Data;
 @Table(name = "dish_product", schema = "menu")
 public class DishProduct {
 
-    @ManyToOne
+    @MapsId("dishId")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "dish_id", nullable = false)
     private Dish dish;
 
