@@ -1,5 +1,6 @@
 package ru.otus.menu.lib.api;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface MenuServiceClient {
@@ -8,5 +9,9 @@ public interface MenuServiceClient {
 
     String DISH_URL = "/dish";
 
+    String RECIPE_URL = DISH_URL + "/products";
+
     DishResponseDto getById(UUID dishId, Integer quantity);
+
+    List<RecipeResponseDto> getRecipes(List<UUID> dishIds);
 }

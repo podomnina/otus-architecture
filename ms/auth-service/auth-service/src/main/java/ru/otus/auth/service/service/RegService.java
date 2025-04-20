@@ -9,8 +9,13 @@ import org.springframework.stereotype.Service;
 import ru.otus.auth.service.mapper.RegisterMapper;
 import ru.otus.auth.service.model.dto.reg.RegRequestDto;
 import ru.otus.auth.service.model.dto.reg.RegResponseDto;
+import ru.otus.auth.service.model.entity.UserRole;
+import ru.otus.auth.service.model.entity.UserRoleId;
 import ru.otus.auth.service.repository.IdentifierRepository;
+import ru.otus.auth.service.repository.RoleRepository;
 import ru.otus.auth.service.repository.UserRepository;
+import ru.otus.auth.service.repository.UserRoleRepository;
+import ru.otus.common.Roles;
 
 @Slf4j
 @Service
@@ -19,6 +24,9 @@ public class RegService {
 
     private final UserRepository userRepository;
     private final IdentifierRepository identifierRepository;
+    private final UserRoleRepository userRoleRepository;
+    private final RoleRepository roleRepository;
+
     private final RegisterMapper mapper;
     private final PasswordEncoder passwordEncoder;
 
@@ -38,6 +46,14 @@ public class RegService {
 
         var identifier = mapper.toIdentifier(createdUser.getId(), email, secret);
         identifierRepository.save(identifier);
+
+        var clientRole = roleRepository.findByName(Roles.CLIENT.name());
+        if (clientRole.isPresent()) {
+            var userRole = new UserRole();
+            userRole.setUser(createdUser);
+            userRole.setRole(clientRole.get());
+            userRoleRepository.save(userRole);
+        }
 
         return new RegResponseDto(createdUser.getId());
     }

@@ -5,11 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import ru.otus.inventory.lib.api.InventoryServiceClient;
+import ru.otus.menu.lib.api.RecipeResponseDto;
 import ru.otus.menu.lib.api.DishResponseDto;
 import ru.otus.menu.service.mapper.MenuMapper;
 import ru.otus.menu.service.model.dto.MenuListResponseDto;
 import ru.otus.menu.service.model.entity.Dish;
 import ru.otus.menu.service.model.entity.DishProduct;
+import ru.otus.menu.service.repository.DishProductRepository;
 import ru.otus.menu.service.repository.DishRepository;
 
 import java.util.ArrayList;
@@ -25,6 +27,7 @@ public class MenuService {
 
     private final MenuMapper mapper;
     private final DishRepository repository;
+    private final DishProductRepository dishProductRepository;
     private final InventoryServiceClient inventoryServiceClient;
 
     public MenuListResponseDto getActualMenu() {
@@ -49,6 +52,28 @@ public class MenuService {
         //todo check with quantity!!!
         var filteredDish = processDishes(List.of(dish.get()));
         return mapper.mapDish(filteredDish.get(0)); //todo check!!!
+    }
+
+    public List<RecipeResponseDto> getRecipes(List<UUID> dishIds) {
+        var dishProducts = dishProductRepository.findAllByDishIds(dishIds);
+        if (CollectionUtils.isEmpty(dishProducts)) {
+            log.warn("Dish list for ids: {} is empty", dishIds);
+            return List.of();
+        }
+
+        return dishProducts.stream().collect(Collectors.groupingBy(dp -> dp.getId().getDishId()))
+                .entrySet().stream().map(entry -> {
+                    var map = entry.getValue().stream()
+                            .collect(Collectors.toMap(
+                                    v -> v.getId().getProductId(),
+                                    v -> v.getQuantity(),
+                                    (v1, v2) -> v1 + v2)
+                            );
+                    return RecipeResponseDto.builder()
+                            .dishId(entry.getKey())
+                            .productQuantityMap(map)
+                            .build();
+                }).collect(Collectors.toList());
     }
 
     private List<Dish> processDishes(List<Dish> dishes) {

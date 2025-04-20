@@ -11,6 +11,11 @@ spring:
   jpa:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  cache:
+    type: redis
+  redis:
+    host: localhost
+    port: 6379
   flyway:
     url: ${db.url}
     user: ${db.username}

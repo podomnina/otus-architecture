@@ -1,10 +1,16 @@
 package ru.otus.inventory.service.model.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "reserved_product", schema = "inventory")
 public class ReservedProduct {
 

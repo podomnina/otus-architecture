@@ -11,7 +11,7 @@ import java.util.UUID;
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
 
-    @Mapping(target = "status", defaultExpression = "java(ru.otus.order.service.model.OrderStatus.CREATED)")
+    @Mapping(target = "status", expression = "java(ru.otus.order.service.model.OrderStatus.CREATED)")
     Order map(Cart cart, UUID id);
 
     OrderResponseDto map(Order order);

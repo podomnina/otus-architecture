@@ -1,11 +1,13 @@
 package ru.otus.order.service.model.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Id;
 import lombok.Data;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +17,8 @@ import java.util.concurrent.TimeUnit;
 public class Cart implements Serializable {
     @Id
     private UUID userId;
-    private Integer totalPrice;
+    @Column(precision = 8, scale = 2)
+    private BigDecimal totalPrice;
     private List<Item> items;
 
     @TimeToLive(unit = TimeUnit.MINUTES) // todo to config
@@ -25,7 +28,8 @@ public class Cart implements Serializable {
     public static class Item {
         private UUID dishId;
         private String name;
-        private Integer price;
+        @Column(precision = 8, scale = 2)
+        private BigDecimal price;
         private Integer quantity;
         private Boolean isAvailable;
     }

@@ -6,10 +6,13 @@ import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import ru.otus.lib.kafka.model.SendNotificationModel;
 
 @Service
 public class EmailService {
@@ -29,6 +32,10 @@ public class EmailService {
         message.setSubject(subject);
         message.setText(text);
         mailSender.send(message);
+    }
+
+    public void send(SendNotificationModel model) {
+        sendSimpleEmail(model.getEmail(), model.getSubject(), model.getMessage());
     }
 
     @Async

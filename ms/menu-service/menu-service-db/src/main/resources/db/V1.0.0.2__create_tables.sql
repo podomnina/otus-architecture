@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS menu.dish
     name varchar(1024) NOT NULL,
     category varchar(120) NOT NULL,
     is_available bool NOT NULL default true,
-    price int not null default 0
+    price numeric(8,2) not null default 0
 );
 
 CREATE TABLE IF NOT EXISTS menu.dish_product

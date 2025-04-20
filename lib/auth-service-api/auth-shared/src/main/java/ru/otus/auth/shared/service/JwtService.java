@@ -10,7 +10,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
-import ru.otus.common.error.UserCtx;
+import ru.otus.common.UserCtx;
 
 import java.security.Key;
 import java.util.Date;

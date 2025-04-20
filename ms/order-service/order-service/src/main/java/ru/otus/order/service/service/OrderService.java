@@ -6,10 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import ru.otus.common.error.BusinessAppException;
-import ru.otus.common.error.UserCtx;
+import ru.otus.common.Roles;
+import ru.otus.common.UserCtx;
 import ru.otus.menu.lib.api.MenuServiceClient;
 import ru.otus.order.service.mapper.CartMapper;
 import ru.otus.order.service.mapper.OrderMapper;
+import ru.otus.order.service.model.OrderEvent;
 import ru.otus.order.service.model.dto.AddItemRequestDto;
 import ru.otus.order.service.model.dto.CartResponseDto;
 import ru.otus.order.service.model.dto.OrderResponseDto;
@@ -17,6 +19,7 @@ import ru.otus.order.service.model.entity.Cart;
 import ru.otus.order.service.repository.CartRepository;
 import ru.otus.order.service.repository.OrderRepository;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +35,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final CartMapper cartMapper;
     private final OrderMapper orderMapper;
+    private final OrderProcessorService orderProcessorService;
 
     //todo transactional?
     public CartResponseDto addItem(AddItemRequestDto dto, UUID userId) {
@@ -72,7 +76,9 @@ public class OrderService {
         List<Cart.Item> items = cart.getItems() != null ? cart.getItems() : new ArrayList();
         items.add(newDish);
 
-        var totalPrice = items.stream().map(Cart.Item::getPrice).reduce(0, Integer::sum);
+        var totalPrice = items.stream()
+                .map(Cart.Item::getPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
         cart.setTotalPrice(totalPrice);
         cart.setItems(items);
@@ -91,14 +97,15 @@ public class OrderService {
             var cart = new Cart();
             cart.setUserId(userId);
             cart.setItems(new ArrayList<>());
-            cart.setTotalPrice(0);
+            cart.setTotalPrice(BigDecimal.ZERO);
             cartRepository.save(cart);
             return cartMapper.map(cart);
         }
     }
 
     @Transactional
-    public OrderResponseDto submit(UUID orderId, UUID userId) {
+    public OrderResponseDto submit(UUID orderId, UserCtx userCtx) {
+        var userId = userCtx.getId();
         var cartOpt = cartRepository.findById(userId);
         if (cartOpt.isEmpty()) {
             log.error("Cart for the user with id {} not found", userId);
@@ -106,8 +113,9 @@ public class OrderService {
         }
 
         var order = orderMapper.map(cartOpt.get(), orderId);
-        var createdOrder = orderRepository.save(order);
+        var createdOrder = orderProcessorService.createOrder(order, userCtx);
         cartRepository.deleteById(userId); //todo check
+
         return orderMapper.map(createdOrder);
     }
 
@@ -119,11 +127,17 @@ public class OrderService {
         }
 
         var order = orderOpt.get();
-        if (userCtx.getRoles().contains("CLIENT") && order.getUserId() != userCtx.getId()) {
+        if (userCtx.getRoles().contains(Roles.CLIENT) && order.getUserId() != userCtx.getId()) {
             log.error("User with id {} trying to get not own order with id {}", userCtx.getId(), orderId);
             throw new BusinessAppException("order.not.found", "Order not found");
         }
 
+        return orderMapper.map(order);
+    }
+
+    @Transactional
+    public OrderResponseDto setStatus(UUID orderId, OrderEvent event) {
+        var order = orderProcessorService.setStatus(orderId, event);
         return orderMapper.map(order);
     }
 }

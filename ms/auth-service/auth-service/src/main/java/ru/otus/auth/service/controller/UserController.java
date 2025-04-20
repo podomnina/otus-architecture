@@ -9,7 +9,7 @@ import ru.otus.auth.service.model.dto.user.UpdateUserRequestDto;
 import ru.otus.auth.service.model.dto.user.UserListResponseDto;
 import ru.otus.auth.service.model.dto.user.UserResponseDto;
 import ru.otus.auth.service.service.UserService;
-import ru.otus.common.error.UserCtx;
+import ru.otus.common.UserCtx;
 
 import java.util.UUID;
 

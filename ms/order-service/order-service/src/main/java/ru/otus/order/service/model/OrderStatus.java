@@ -1,5 +1,5 @@
 package ru.otus.order.service.model;
 
 public enum OrderStatus {
-    CREATED, COOKING, READY, DELIVERED
+    CREATED, PENDING_PAYMENT, PAID, COOKING, READY, DELIVERED, CANCELLED
 }

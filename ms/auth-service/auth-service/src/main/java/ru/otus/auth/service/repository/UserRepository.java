@@ -9,5 +9,5 @@ import java.util.UUID;
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
 
-    User findByLastNameAndFirstNameAndSecondNameAndEmailAndRestaurantId(String lastName, String firstName, String secondName, String email, UUID restaurantId);
+    User findByLastNameAndFirstNameAndSecondNameAndEmail(String lastName, String firstName, String secondName, String email);
 }

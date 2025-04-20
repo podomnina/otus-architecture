@@ -7,19 +7,16 @@ import ru.otus.auth.service.model.dto.auth.UserDto;
 import ru.otus.auth.service.model.dto.user.CreateUserRequestDto;
 import ru.otus.auth.service.model.dto.user.UserResponseDto;
 import ru.otus.auth.service.model.entity.User;
-import ru.otus.common.error.UserCtx;
+import ru.otus.common.UserCtx;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-    @Mapping(source = "restaurant.id", target = "restaurantId")
-    @Mapping(source = "restaurant.code", target = "restaurantCode")
     AuthContext toCtx(User user);
 
     @Mapping(target = "createdAt", expression = "java(java.time.OffsetDateTime.now())")
-    @Mapping(target = "restaurant.id", source = "dto.restaurantId")
     User toEntity(CreateUserRequestDto dto);
 
     UserResponseDto toDto(User user);

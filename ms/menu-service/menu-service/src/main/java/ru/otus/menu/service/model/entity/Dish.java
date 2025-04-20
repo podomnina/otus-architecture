@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
 import ru.otus.menu.service.model.DishCategory;
 
+import java.math.BigDecimal;
 import java.util.Set;
 import java.util.UUID;
 
@@ -17,7 +18,8 @@ public class Dish {
     private UUID id;
     private String name;
     private DishCategory category;
-    private Integer price;
+    @Column(precision = 8, scale = 2)
+    private BigDecimal price;
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<DishProduct> products;
 }

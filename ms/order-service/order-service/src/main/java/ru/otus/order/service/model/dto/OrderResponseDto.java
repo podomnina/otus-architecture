@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.otus.order.service.model.OrderStatus;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,7 +16,7 @@ public class OrderResponseDto {
     private UUID id;
     private UUID userId;
     private OrderStatus status;
-    private Integer totalPrice;
+    private BigDecimal totalPrice;
     private List<Item> items;
 
     @Data
@@ -24,7 +25,7 @@ public class OrderResponseDto {
     public static class Item {
         private UUID dishId;
         private String name;
-        private Integer price;
+        private BigDecimal price;
         private Integer quantity;
     }
 }

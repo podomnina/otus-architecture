@@ -1,4 +1,4 @@
-package ru.otus.common.error;
+package ru.otus.common;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,6 @@ import java.util.List;
 public class UserCtx {
     private UUID id;
     private String login;
-    private UUID restaurantId;
-    private String restaurantCode;
-    private List<String> roles;
+    private String firstName;
+    private List<Roles> roles;
 }

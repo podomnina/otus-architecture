@@ -12,7 +12,6 @@ import java.util.UUID;
 public interface RegisterMapper {
 
     @Mapping(target = "createdAt", expression = "java(java.time.OffsetDateTime.now())")
-    @Mapping(target = "restaurant.id", source = "dto.restaurantId")
     User toUser(RegRequestDto dto);
 
     Identifier toIdentifier(UUID userId, String login, String secret);

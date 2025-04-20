@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.annotations.UuidGenerator;
 import ru.otus.order.service.model.OrderStatus;
 
+import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
@@ -17,11 +18,19 @@ public class Order {
     @UuidGenerator
     private UUID id;
     private UUID userId;
+    @Enumerated(EnumType.STRING)
     private OrderStatus status;
     private OffsetDateTime createdAt;
-    private Integer totalPrice;
+    private OffsetDateTime updatedAt;
+    @Column(precision = 8, scale = 2)
+    private BigDecimal totalPrice;
     private OffsetDateTime completedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<OrderItem> products;
+    private Set<OrderItem> items;
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = OffsetDateTime.now();
+    }
 }

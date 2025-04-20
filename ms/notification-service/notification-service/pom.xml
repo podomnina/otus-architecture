@@ -32,6 +32,14 @@
             <groupId>org.springframework.retry</groupId>
             <artifactId>spring-retry</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ru.otus</groupId>
+            <artifactId>lib-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ru.otus</groupId>
+            <artifactId>notification-service-api</artifactId>
+        </dependency>
     </dependencies>
 
 

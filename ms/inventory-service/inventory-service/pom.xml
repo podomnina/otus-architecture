@@ -22,6 +22,18 @@
             <groupId>ru.otus</groupId>
             <artifactId>inventory-service-api</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ru.otus</groupId>
+            <artifactId>lib-kafka</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ru.otus</groupId>
+            <artifactId>lib-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ru.otus</groupId>
+            <artifactId>menu-service-client</artifactId>
+        </dependency>
     </dependencies>
 
 

@@ -19,7 +19,4 @@ public class User {
     private String email;
     private OffsetDateTime createdAt;
     private OffsetDateTime blockedAt;
-    @ManyToOne
-    @JoinColumn(name = "restaurant_id")
-    private Restaurant restaurant;
 }

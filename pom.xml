@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.4.1</version>
-		<relativePath/>  lookup parent from repository
+		<relativePath/>
 	</parent>
 	<groupId>ru.otus</groupId>
 	<artifactId>otus-architecture</artifactId>
@@ -26,6 +26,8 @@
 
 		<module>lib/lib-exception</module>
 		<module>lib/lib-redis</module>
+		<module>lib/lib-kafka</module>
+		<module>lib/lib-ctx</module>
 
 		<module>lib/auth-service-api/auth-shared</module>
 
@@ -37,6 +39,9 @@
 
 		<module>lib/notification-service/notification-service-api</module>
 		<module>lib/notification-service/notification-service-client</module>
+
+		<module>lib/payment-service/payment-service-api</module>
+		<module>lib/payment-service/payment-service-client</module>
 
 		<module>ms/auth-gateway/auth-gateway</module>
 

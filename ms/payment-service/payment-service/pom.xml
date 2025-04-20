@@ -18,6 +18,10 @@
             <groupId>ru.otus</groupId>
             <artifactId>payment-service-db</artifactId>
         </dependency>
+        <dependency>
+            <groupId>ru.otus</groupId>
+            <artifactId>lib-kafka</artifactId>
+        </dependency>
     </dependencies>
 
 

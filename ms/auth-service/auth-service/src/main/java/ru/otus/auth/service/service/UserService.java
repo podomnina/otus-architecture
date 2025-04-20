@@ -19,7 +19,7 @@ import ru.otus.auth.service.repository.IdentifierRepository;
 import ru.otus.auth.service.repository.UserRepository;
 import ru.otus.auth.service.repository.UserRoleRepository;
 import ru.otus.auth.shared.model.AuthContext;
-import ru.otus.common.error.UserCtx;
+import ru.otus.common.UserCtx;
 
 import java.util.NoSuchElementException;
 import java.util.Objects;
@@ -38,9 +38,9 @@ public class UserService {
     @Transactional
     public UserResponseDto create(CreateUserRequestDto dto) {
         //todo validate fields
-        var existingUser = repository.findByLastNameAndFirstNameAndSecondNameAndEmailAndRestaurantId(
+        var existingUser = repository.findByLastNameAndFirstNameAndSecondNameAndEmail(
                 dto.getLastName(), dto.getFirstName(), dto.getSecondName(),
-                dto.getEmail(), dto.getRestaurantId());
+                dto.getEmail());
         if (existingUser != null) {
             log.error("User with the same info already exists: {}", dto);
             throw new EntityExistsException("User already exists in the system"); //todo process exception
@@ -141,6 +141,7 @@ public class UserService {
 
         var authContext = mapper.toCtx(user.get());
         authContext.setLogin(identifier.getLogin());
+        authContext.setFirstName(user.get().getFirstName());
         authContext.setPassword(identifier.getSecret());
         authContext.setRoles(roles);
         return authContext;

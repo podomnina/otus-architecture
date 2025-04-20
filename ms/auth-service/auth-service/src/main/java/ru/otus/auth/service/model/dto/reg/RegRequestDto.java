@@ -27,6 +27,4 @@ public class RegRequestDto {
     private String email;
     @NotEmpty
     private String password;
-    @NotNull
-    private UUID restaurantId;
 }
