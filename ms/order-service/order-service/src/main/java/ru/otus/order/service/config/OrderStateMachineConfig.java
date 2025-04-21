@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.statemachine.action.Action;
 import org.springframework.statemachine.config.EnableStateMachine;
+import org.springframework.statemachine.config.EnableStateMachineFactory;
 import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
 import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
 import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
@@ -17,16 +18,17 @@ import ru.otus.order.service.model.OrderEvent;
 import ru.otus.order.service.model.OrderStatus;
 import ru.otus.order.service.model.entity.Order;
 import ru.otus.order.service.service.OrderProcessorService;
+import ru.otus.order.service.service.OrderStateMachineService;
 
 import java.util.EnumSet;
 
 @Slf4j
 @Configuration
-@EnableStateMachine
+@EnableStateMachineFactory(name = "stateMachineFactory")
 @RequiredArgsConstructor
 public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<OrderStatus, OrderEvent> {
 
-    private final OrderProcessorService orderProcessorService;
+    private final OrderStateMachineService stateMachineService;
 
     @Override
     public void configure(StateMachineStateConfigurer<OrderStatus, OrderEvent> states) throws Exception {
@@ -90,7 +92,7 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
     public Action<OrderStatus, OrderEvent> sendToPaymentAction() {
         return context -> {
             Order order = context.getMessage().getHeaders().get("order", Order.class);
-            orderProcessorService.sendToPaymentAction(order);
+            stateMachineService.sendToPaymentAction(order);
         };
     }
 
@@ -98,7 +100,7 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
     public Action<OrderStatus, OrderEvent> startCookingAction() {
         return context -> {
             Order order = context.getMessage().getHeaders().get("order", Order.class);
-            orderProcessorService.startCookingAction(order);
+            stateMachineService.startCookingAction(order);
         };
     }
 
@@ -107,7 +109,7 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
         return context -> {
             Order order = context.getMessage().getHeaders().get("order", Order.class);
             UserCtx userCtx = context.getMessage().getHeaders().get("userCtx", UserCtx.class);
-            orderProcessorService.sendToReadyAction(order, userCtx);
+            stateMachineService.sendToReadyAction(order, userCtx);
         };
     }
 
@@ -116,7 +118,7 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
         return context -> {
             Order order = context.getMessage().getHeaders().get("order", Order.class);
             UserCtx userCtx = context.getMessage().getHeaders().get("userCtx", UserCtx.class);
-            orderProcessorService.sendToDeliveredAction(order, userCtx);
+            stateMachineService.sendToDeliveredAction(order, userCtx);
         };
     }
 
@@ -126,7 +128,7 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
             Order order = context.getMessage().getHeaders().get("order", Order.class);
             UserCtx userCtx = context.getMessage().getHeaders().get("userCtx", UserCtx.class);
             var event = context.getEvent();
-            orderProcessorService.cancelOrderAction(order, userCtx, event);
+            stateMachineService.cancelOrderAction(order, userCtx, event);
         };
     }
 

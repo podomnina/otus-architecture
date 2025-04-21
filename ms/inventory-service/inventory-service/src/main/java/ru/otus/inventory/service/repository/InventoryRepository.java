@@ -3,6 +3,7 @@ package ru.otus.inventory.service.repository;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.otus.inventory.service.model.entity.Inventory;
 
@@ -14,5 +15,6 @@ import java.util.UUID;
 public interface InventoryRepository extends JpaRepository<Inventory, UUID> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    List<Inventory> findAllByIdsForUpdate(Iterable<UUID> ids);
+    @Query("SELECT i FROM Inventory i WHERE i.productId IN :productIds")
+    List<Inventory> findForUpdateAllByProductIds(Iterable<UUID> productIds);
 }

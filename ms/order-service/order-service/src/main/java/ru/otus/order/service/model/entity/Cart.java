@@ -1,7 +1,7 @@
 package ru.otus.order.service.model.entity;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Id;
+import org.springframework.data.annotation.Id;
 import lombok.Data;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;

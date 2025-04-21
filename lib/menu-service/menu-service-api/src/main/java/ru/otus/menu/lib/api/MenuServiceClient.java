@@ -9,7 +9,7 @@ public interface MenuServiceClient {
 
     String DISH_URL = "/dish";
 
-    String RECIPE_URL = DISH_URL + "/products";
+    String RECIPE_URL = "/recipe";
 
     DishResponseDto getById(UUID dishId, Integer quantity);
 

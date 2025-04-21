@@ -1,19 +1,31 @@
 package ru.otus.inventory.service.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 
 import java.util.UUID;
 
-@Data
 @Entity
 @Table(name = "inventory", schema = "inventory")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Inventory {
-    private Integer quantity;
-    private Integer threshold;
+
     @Id
+    @Column(name = "product_id")
     private UUID productId;
-    //@OneToOne
-    //@JoinColumn(name = "product_id", referencedColumnName = "id", insertable = false, updatable = false)
-    //private Product product;
+
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", referencedColumnName = "id")
+    private Product product;
+
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private int quantity;
+
+    @Column(nullable = false, columnDefinition = "int default 0")
+    private int threshold;
 }

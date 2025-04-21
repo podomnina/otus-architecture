@@ -52,14 +52,6 @@ public class OrderController {
 
     //todo claims roles
     @PostMapping("/status/{id}")
-    public OrderResponseDto getStatus(@UserContext UserCtx userCtx, @PathVariable UUID id) {
-        var userId = userCtx.getId();
-        log.debug("Trying to check order status by user with id: {} for order with id: {}", userId, id);
-        return service.getStatus(id, userCtx);
-    }
-
-    //todo claims roles
-    @PostMapping("/status/{id}")
     public OrderResponseDto setStatus(@UserContext UserCtx userCtx,
                                       @PathVariable UUID id,
                                       @RequestParam OrderEvent event) {

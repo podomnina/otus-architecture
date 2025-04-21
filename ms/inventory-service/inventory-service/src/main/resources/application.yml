@@ -16,6 +16,17 @@ spring:
   redis:
     host: localhost
     port: 6379
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: inventory-group
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
   flyway:
     url: ${db.url}
     user: ${db.username}
@@ -29,6 +40,10 @@ db:
   url:
   username:
   password:
+
+webclient:
+  menuService:
+    url: "http://localhost:8082"
 
 management:
   endpoints:

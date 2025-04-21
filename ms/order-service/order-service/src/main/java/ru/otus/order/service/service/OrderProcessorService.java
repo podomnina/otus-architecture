@@ -30,8 +30,6 @@ public class OrderProcessorService {
     private final OrderRepository orderRepository;
     private final StateMachineFactory<OrderStatus, OrderEvent> stateMachineFactory;
     private final KafkaProducerService kafkaProducerService;
-    private final CartRepository cartRepository;
-    private final CartMapper cartMapper;
 
     public Order createOrder(Order order, UserCtx userCtx) {
         var createdOrder = orderRepository.save(order);
@@ -101,58 +99,7 @@ public class OrderProcessorService {
         }
     }
 
-    @Transactional
-    public void sendToPaymentAction(Order order) {
-        var orderId = order.getId();
-        log.debug("Preparing order with id: {} for the payment action", orderId);
-        orderRepository.updateStatus(orderId, OrderStatus.PENDING_PAYMENT); //todo?
 
-        var userId = order.getUserId();
-        var amount = order.getTotalPrice();
-        var paymentModel = PaymentProcessModel.init(orderId, userId, amount);
-        kafkaProducerService.send(BusinessTopics.ORDER_PAYMENT_PROCESS, paymentModel);
-    }
-
-    @Transactional
-    public void startCookingAction(Order order) {
-        var orderId = order.getId();
-        log.debug("Preparing order with id: {} for the cooking action", order.getId());
-        orderRepository.updateStatus(orderId, OrderStatus.COOKING); //todo?
-
-        var releaseModel = ReleaseIngredientsModel.initCooking(orderId);
-        kafkaProducerService.send(BusinessTopics.ORDER_RELEASE_INGREDIENTS, releaseModel);
-    }
-
-    @Transactional
-    public void sendToReadyAction(Order order, UserCtx userCtx) {
-        log.debug("Sending ready action email info for order with id: {}", order.getId());
-        var notificationModel = SendNotificationModel.orderIsReady(userCtx);
-        kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);
-    }
-
-    @Transactional
-    public void sendToDeliveredAction(Order order, UserCtx userCtx) {
-        log.debug("Sending delivered action email info for order with id: {}", order.getId());
-        var notificationModel = SendNotificationModel.orderIsDelivered(userCtx);
-        kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);
-    }
-
-    @Transactional
-    public void cancelOrderAction(Order order, UserCtx userCtx, OrderEvent event) {
-        var orderId = order.getId();
-        log.debug("Preparing order with id: {} for the cancelling because of the event: {}", order.getId(), event);
-        orderRepository.updateStatus(orderId, OrderStatus.CANCELLED); //todo?
-
-        var cart = cartMapper.map(order);
-        //todo recalculate + check dishes again
-        cartRepository.save(cart);
-
-        var releaseModel = ReleaseIngredientsModel.initRelease(orderId);
-        kafkaProducerService.send(BusinessTopics.ORDER_RELEASE_INGREDIENTS, releaseModel);
-
-        var notificationModel = prepareErrorNotification(userCtx, event);
-        kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);
-    }
 
     private StateMachine<OrderStatus, OrderEvent> buildStateMachine(Order order) {
         return buildStateMachine(order, null);
@@ -176,16 +123,5 @@ public class OrderProcessorService {
         }
 
         return sm;
-    }
-
-    private SendNotificationModel prepareErrorNotification(UserCtx userCtx, OrderEvent event) {
-        if (OrderEvent.INGREDIENTS_NOT_AVAILABLE == event) {
-            return SendNotificationModel.orderCancelledByIngredients(userCtx);
-        } else if (OrderEvent.PAYMENT_FAILED == event) {
-            return SendNotificationModel.orderCancelledByPayment(userCtx);
-        }
-
-        //todo
-        throw new BusinessAppException("order.error.unknown.event", "Unknown event");
     }
 }

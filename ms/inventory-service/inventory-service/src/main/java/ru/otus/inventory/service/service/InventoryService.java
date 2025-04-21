@@ -150,7 +150,7 @@ public class InventoryService {
                             i -> i.getQuantity(),
                             (i1, i2) -> i1 + i2));
             var productIds = productMap.keySet();
-            var inventories = inventoryRepository.findAllByIdsForUpdate(productIds);
+            var inventories = inventoryRepository.findForUpdateAllByProductIds(productIds);
             if (CollectionUtils.isEmpty(inventories)) {
                 log.warn("Inventory does not contain products with ids: {}", productIds);
                 return;

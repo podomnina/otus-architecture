@@ -98,7 +98,7 @@ public class MenuService {
             log.error("Error while getting actual balance from inventory-service. Skip the result");
         }
 
-        if (actualBalance == null || CollectionUtils.isEmpty(actualBalance.getBalance())) {
+        if (actualBalance == null) {
             log.warn("No data about current product balance");
             return dishes;
         }
@@ -107,7 +107,7 @@ public class MenuService {
 
         var dishesToExclude = dishes.stream()
                 .filter(d -> d.getProducts().stream()
-                        .anyMatch(dp -> dp.getQuantity() > balance.get(dp.getId().getProductId()))
+                        .anyMatch(dp -> dp.getQuantity() > balance.getOrDefault(dp.getId().getProductId(), 0))
                 )
                 .map(Dish::getId)
                 .collect(Collectors.toList());

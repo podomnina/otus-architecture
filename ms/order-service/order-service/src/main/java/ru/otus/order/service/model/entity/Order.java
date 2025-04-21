@@ -1,7 +1,7 @@
 package ru.otus.order.service.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 import ru.otus.order.service.model.OrderStatus;
 
@@ -10,9 +10,13 @@ import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
 @Entity
 @Table(name = "order", schema = "order")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Order {
     @Id
     @UuidGenerator

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS order.order
+CREATE TABLE IF NOT EXISTS "order"."order"
 (
     id uuid PRIMARY KEY,
     user_id uuid not null,
@@ -8,9 +8,9 @@ CREATE TABLE IF NOT EXISTS order.order
     completed_at timestamptz
 );
 
-CREATE TABLE IF NOT EXISTS order.order_item
+CREATE TABLE IF NOT EXISTS "order".order_item
 (
-    order_id uuid REFERENCES order.order (id) NOT NULL,
+    order_id uuid REFERENCES "order"."order" (id) NOT NULL,
     dish_id uuid not null,
     price numeric(8, 2) not null default 0,
     quantity int NOT NULL default 0,

@@ -18,16 +18,16 @@ import java.util.UUID;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    @Query("SELECT o FROM order.order o WHERE o.status = :status AND o.createdAt >= :date")
+    @Query("SELECT o FROM Order o WHERE o.status = :status AND o.createdAt >= :date")
     List<Order> findRecentByStatus(
             @Param("status") OrderStatus status,
             @Param("date") OffsetDateTime date);
 
     @Modifying
-    @Query("UPDATE order.order o SET o.status = :status WHERE o.id = :id")
+    @Query("UPDATE Order o SET o.status = :status WHERE o.id = :id")
     void updateStatus(@Param("id") UUID id, @Param("status") OrderStatus status);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT o FROM order.order o WHERE o.id = :id")
+    @Query("SELECT o FROM Order o WHERE o.id = :id")
     Optional<Order> findByIdForUpdate(@Param("id") UUID id);
 }

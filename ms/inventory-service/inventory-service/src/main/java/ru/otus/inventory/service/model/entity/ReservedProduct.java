@@ -18,7 +18,8 @@ public class ReservedProduct {
     private ReservedProductId id;
     private Integer quantity;
 
-    @ManyToOne
+    @MapsId("productId")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 }

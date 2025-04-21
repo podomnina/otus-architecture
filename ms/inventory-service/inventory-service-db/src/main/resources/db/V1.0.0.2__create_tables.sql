@@ -14,7 +14,7 @@ CREATE TABLE IF NOT EXISTS inventory.inventory
 
 CREATE TABLE IF NOT EXISTS inventory.reserved_product
 (
-    order_id uuid PRIMARY KEY,
+    order_id uuid NOT NULL,
     product_id uuid REFERENCES inventory.product (id) NOT NULL,
     quantity int NOT NULL default 0,
     PRIMARY KEY(order_id, product_id)

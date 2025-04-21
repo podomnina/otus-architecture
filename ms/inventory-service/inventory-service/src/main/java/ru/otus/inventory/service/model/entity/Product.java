@@ -1,20 +1,31 @@
 package ru.otus.inventory.service.model.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.UuidGenerator;
+import lombok.*;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Data
 @Entity
 @Table(name = "product", schema = "inventory")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Product {
+
     @Id
-    @UuidGenerator
+    @GeneratedValue
     private UUID id;
+
+    @Column(nullable = false, length = 1024)
     private String name;
+
+    @OneToOne(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Inventory inventory;
+
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Inventory> products;
+    private Set<ReservedProduct> reservedProducts = new HashSet<>();
 }
