@@ -51,13 +51,26 @@ public class InventoryService {
             return new ProductBalanceResponseDto(Map.of());
         }
 
-        var map = values.stream().collect(Collectors.toMap(Inventory::getProductId, Inventory::getQuantity));
+        var reservedProducts = reservedProductRepository.findAllByProductIds(productIds);
+        var reservedProductMap = reservedProducts.stream()
+                .collect(Collectors.toMap(
+                        rp -> rp.getId().getProductId(),
+                        rp -> rp.getQuantity(),
+                        Integer::sum)
+                );
+
+        var map = values.stream().collect(Collectors.toMap(
+                i -> i.getProductId(),
+                i -> i.getQuantity() - reservedProductMap.getOrDefault(i.getProductId(), 0),
+                Integer::sum
+        ));
         return new ProductBalanceResponseDto(map);
     }
 
     @Transactional
     public void processReservation(ReservationProcessModel model) {
-        var dishIds = new ArrayList<>(model.getDishQuantityMap().keySet());
+        var dishQuantityMap = model.getDishQuantityMap();
+        var dishIds = new ArrayList<>(dishQuantityMap.keySet());
         var orderId = model.getOrderId();
         log.debug("Trying to check products for dishes with ids: {} for order with id: {}", dishIds, orderId);
 /* todo потом кэшировать
@@ -77,7 +90,17 @@ public class InventoryService {
 
         var recipes = menuServiceClient.getRecipes(dishIds);
 
-        var productQuantityList = recipes.getDishProductQuantityMap().values().stream()
+        var productQuantityList = recipes.getDishProductQuantityMap().entrySet().stream()
+                .map(dpqEntry -> {
+                    var dishId = dpqEntry.getKey();
+                    var dishQuantity = dishQuantityMap.getOrDefault(dishId, 1);
+                    return dpqEntry.getValue().entrySet().stream()
+                            .collect(Collectors.toMap(
+                                    i -> i.getKey(),
+                                    i -> i.getValue() * dishQuantity,
+                                    Integer::sum
+                            ));
+                })
                 .flatMap(innerMap -> innerMap.entrySet().stream())
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
@@ -93,14 +116,24 @@ public class InventoryService {
                     BusinessTopics.ORDER_RESERVATION_CONFIRMATION,
                     ReservationConfirmationModel.error(orderId, "Inventory is empty")
             );
+            return;
         }
+
+        var reservedProducts = reservedProductRepository.findAllByProductIds(productIds);
+        var reservedProductMap = reservedProducts.stream()
+                .collect(Collectors.toMap(
+                        rp -> rp.getId().getProductId(),
+                        rp -> rp.getQuantity(),
+                        Integer::sum)
+                );
 
         //каких продуктов не хватает
         var shortageIds = inventories.stream()
                 .filter(i -> {
                     var productId = i.getProductId();
                     var requestedQuantity = productQuantityList.get(productId);
-                    return requestedQuantity == null || requestedQuantity > i.getQuantity();
+                    var reservedQuantity = reservedProductMap.getOrDefault(productId, 0);
+                    return requestedQuantity == null || requestedQuantity > i.getQuantity() - reservedQuantity;
                 })
                 .map(Inventory::getProductId)
                 .toList();
@@ -111,6 +144,7 @@ public class InventoryService {
                     BusinessTopics.ORDER_RESERVATION_CONFIRMATION,
                     ReservationConfirmationModel.error(orderId, "Some inventory is empty or are not enough")
             );
+            return;
         }
 
         log.debug("Shortage products id list is empty! Everything is fine, reserving products...");
@@ -159,12 +193,10 @@ public class InventoryService {
                 return;
             }
 
-            inventories.forEach(i -> {
-                var updatedQuantity = i.getQuantity() - productMap.getOrDefault(i.getProductId(), 0);
-                i.setQuantity(updatedQuantity);
-            });
+            inventories.forEach(i -> i.decrementQuantity(productMap.getOrDefault(i.getProductId(), 0)));
 
             inventoryRepository.saveAll(inventories);
+            inventoryRepository.flush();
         }
 
         reservedProductRepository.deleteAllByOrderId(orderId);

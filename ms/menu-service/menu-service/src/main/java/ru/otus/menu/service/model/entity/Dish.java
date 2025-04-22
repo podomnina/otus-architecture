@@ -24,7 +24,7 @@ public class Dish {
     @Enumerated(EnumType.STRING)
     private DishCategory category;
     @Column(precision = 8, scale = 2)
-    private BigDecimal price;
+    private BigDecimal price = BigDecimal.ZERO;
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<DishProduct> products = new HashSet<>();
 

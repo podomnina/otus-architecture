@@ -19,8 +19,8 @@ public class OrderItem {
     private String name;
 
     @Column(precision = 8, scale = 2)
-    private BigDecimal price;
-    private Integer quantity;
+    private BigDecimal price = BigDecimal.ZERO;
+    private Integer quantity = 1;
 
     @MapsId("orderId")
     @ManyToOne(fetch = FetchType.LAZY)

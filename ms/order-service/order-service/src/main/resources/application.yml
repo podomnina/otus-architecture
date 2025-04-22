@@ -63,3 +63,7 @@ management:
     metrics:
       export:
         enabled: true
+
+logging:
+  level:
+    ru.otus: DEBUG

@@ -10,12 +10,15 @@ import ru.otus.lib.kafka.model.ReleaseIngredientsModel;
 import ru.otus.lib.kafka.model.SendNotificationModel;
 import ru.otus.lib.kafka.service.BusinessTopics;
 import ru.otus.lib.kafka.service.KafkaProducerService;
+import ru.otus.menu.lib.api.MenuServiceClient;
 import ru.otus.order.service.mapper.CartMapper;
 import ru.otus.order.service.model.OrderEvent;
 import ru.otus.order.service.model.OrderStatus;
 import ru.otus.order.service.model.entity.Order;
 import ru.otus.order.service.repository.CartRepository;
 import ru.otus.order.service.repository.OrderRepository;
+
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,11 +29,14 @@ public class OrderStateMachineService {
     private final KafkaProducerService kafkaProducerService;
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
+    private final MenuServiceClient menuServiceClient;
 
     public void sendToPaymentAction(Order order) {
         var orderId = order.getId();
         log.debug("Preparing order with id: {} for the payment action", orderId);
-        orderRepository.updateStatus(orderId, OrderStatus.PENDING_PAYMENT);
+        order.changeStatus(OrderStatus.PENDING_PAYMENT);
+        orderRepository.save(order);
+        //orderRepository.updateStatus(orderId, OrderStatus.PENDING_PAYMENT);
 
         var userId = order.getUserId();
         var amount = order.getTotalPrice();
@@ -42,10 +48,14 @@ public class OrderStateMachineService {
     public void startCookingAction(Order order) {
         var orderId = order.getId();
         log.debug("Preparing order with id: {} for the cooking action", order.getId());
-        orderRepository.updateStatus(orderId, OrderStatus.COOKING); //todo?
+        order.changeStatus(OrderStatus.COOKING);
+        orderRepository.save(order);
 
         var releaseModel = ReleaseIngredientsModel.initCooking(orderId);
         kafkaProducerService.send(BusinessTopics.ORDER_RELEASE_INGREDIENTS, releaseModel);
+
+        var notificationModel = SendNotificationModel.orderIsCooking(order.getId(), order.getEmail());
+        kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);
     }
 
     @Transactional
@@ -66,10 +76,12 @@ public class OrderStateMachineService {
     public void cancelOrderAction(Order order, OrderEvent event) {
         var orderId = order.getId();
         log.debug("Preparing order with id: {} for the cancelling because of the event: {}", order.getId(), event);
-        orderRepository.updateStatus(orderId, OrderStatus.CANCELLED); //todo?
+        order.changeStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
 
-        var cart = cartMapper.map(order);
-        //todo recalculate + check dishes again
+        var dishIds = order.getItems().stream().map(i -> i.getId().getDishId()).collect(Collectors.toList());
+        var actualDishes = menuServiceClient.getByIds(dishIds);
+        var cart = cartMapper.map(order, actualDishes);
         cartRepository.save(cart);
 
         var releaseModel = ReleaseIngredientsModel.initRelease(orderId);
@@ -86,7 +98,6 @@ public class OrderStateMachineService {
             return SendNotificationModel.orderCancelledByPayment(orderId, email);
         }
 
-        //todo
         throw new BusinessAppException("order.error.unknown.event", "Unknown event");
     }
 }

@@ -28,4 +28,12 @@ public class Inventory {
 
     @Column(nullable = false, columnDefinition = "int default 0")
     private int threshold;
+
+    public void decrementQuantity(Integer quantity) {
+        if (this.quantity >= quantity) {
+            this.quantity = this.quantity - quantity;
+        } else {
+            this.quantity = 0;
+        }
+    }
 }

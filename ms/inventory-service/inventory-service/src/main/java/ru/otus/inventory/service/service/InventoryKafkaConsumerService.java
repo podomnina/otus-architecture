@@ -19,13 +19,22 @@ public class InventoryKafkaConsumerService {
     @KafkaListener(topics = BusinessTopics.ORDER_RESERVATION_PROCESS, groupId = "${spring.kafka.consumer.group-id}")
     public void listenOrderReservationProcess(ReservationProcessModel model) {
         log.debug("Received new reservation process: {}", model);
-        service.processReservation(model);
-
+        try {
+            service.processReservation(model);
+        } catch (Exception e) {
+            log.error("Error while processing order reservation process", e);
+            throw e;
+        }
     }
 
     @KafkaListener(topics = BusinessTopics.ORDER_RELEASE_INGREDIENTS, groupId = "${spring.kafka.consumer.group-id}")
     public void listenOrderReleaseIngredients(ReleaseIngredientsModel model) {
         log.debug("Received new release ingredients: {}", model);
-        service.processRelease(model);
+        try {
+            service.processRelease(model);
+        } catch (Exception e) {
+            log.error("Error while processing order release ingredients", e);
+            throw e;
+        }
     }
 }

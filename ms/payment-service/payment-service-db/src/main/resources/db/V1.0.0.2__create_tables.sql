@@ -11,10 +11,7 @@ CREATE TABLE IF NOT EXISTS payment.payment
     order_id int not null,
     account_id uuid REFERENCES payment.account (user_id) NOT NULL,
     amount numeric(8, 2) not null default 0,
-    status varchar not null,
-    method varchar not null,
-    created_at timestamptz not null default now(),
-    updated_at timestamptz
+    created_at timestamptz not null default now()
 );
 
 CREATE TABLE IF NOT EXISTS payment.refund

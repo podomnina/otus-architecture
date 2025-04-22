@@ -29,9 +29,9 @@ public class Cart implements Serializable {
         private Integer dishId;
         private String name;
         @Column(precision = 8, scale = 2)
-        private BigDecimal price;
-        private Integer quantity;
-        private Boolean isAvailable;
+        private BigDecimal price = BigDecimal.ZERO;
+        private Integer quantity = 1;
+        private Boolean isAvailable = true;
     }
 
     public static Cart newCart(UUID userId) {
@@ -71,6 +71,11 @@ public class Cart implements Serializable {
 
         calculateTotal();
         this.expirationTime = 60L; // todo to config
+    }
+
+    public void addItems(Map<Integer, Item> items) {
+        this.setItems(items);
+        calculateTotal();
     }
 
     private void calculateTotal() {

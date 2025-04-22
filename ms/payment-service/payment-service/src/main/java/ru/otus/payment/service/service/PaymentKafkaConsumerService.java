@@ -18,12 +18,22 @@ public class PaymentKafkaConsumerService {
     @KafkaListener(topics = BusinessTopics.ORDER_PAYMENT_PROCESS, groupId = "${spring.kafka.consumer.group-id}")
     public void listenOrderPaymentProcess(PaymentProcessModel model) {
         log.debug("Received new payment process: {}", model);
-        service.handlePaymentProcess(model);
+        try {
+            service.handlePaymentProcess(model);
+        } catch (Exception e) {
+            log.error("Error while processing order payment process", e);
+            throw e;
+        }
     }
 
     @KafkaListener(topics = BusinessTopics.PAYMENT_NEW_ACCOUNT, groupId = "${spring.kafka.consumer.group-id}")
     public void listenNewAccount(CreateAccountModel model) {
         log.debug("Received new account creation: {}", model);
-        service.handleCreateAccount(model);
+        try {
+            service.handleCreateAccount(model);
+        } catch (Exception e) {
+            log.error("Error while processing new account creation", e);
+            throw e;
+        }
     }
 }

@@ -61,3 +61,4 @@ management:
 logging:
   level:
     org.springframework.security: DEBUG
+    ru.otus: DEBUG

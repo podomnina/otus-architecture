@@ -37,7 +37,6 @@ public class UserService {
 
     @Transactional
     public UserResponseDto create(CreateUserRequestDto dto) {
-        //todo validate fields
         var existingUser = repository.findByLastNameAndFirstNameAndSecondNameAndEmail(
                 dto.getLastName(), dto.getFirstName(), dto.getSecondName(),
                 dto.getEmail());

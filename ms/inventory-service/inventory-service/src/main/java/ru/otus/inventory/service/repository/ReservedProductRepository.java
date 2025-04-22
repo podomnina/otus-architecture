@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import ru.otus.inventory.service.model.entity.ReservedProduct;
 import ru.otus.inventory.service.model.entity.ReservedProductId;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,8 +16,12 @@ public interface ReservedProductRepository extends JpaRepository<ReservedProduct
 
     @Modifying(clearAutomatically = true)
     @Query("DELETE FROM ReservedProduct rp WHERE rp.id.orderId = :orderId")
-    void deleteAllByOrderId(Integer orderId); //todo???
+    void deleteAllByOrderId(Integer orderId);
 
     @Query("SELECT rp FROM ReservedProduct rp WHERE rp.id.orderId = :orderId")
-    List<ReservedProduct> findAllByOrderId(Integer orderId); //todo for update??
+    List<ReservedProduct> findAllByOrderId(Integer orderId);
+
+    @Query("SELECT rp FROM ReservedProduct rp WHERE rp.id.productId in :productIds")
+    List<ReservedProduct> findAllByProductIds(Collection<Integer> productIds);
+
 }

@@ -15,5 +15,5 @@ public class DishProduct {
 
     @EmbeddedId
     private DishProductId id;
-    private Integer quantity;
+    private Integer quantity = 1;
 }

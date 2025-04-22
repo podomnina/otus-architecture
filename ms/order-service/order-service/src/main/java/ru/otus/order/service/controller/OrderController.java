@@ -2,7 +2,6 @@ package ru.otus.order.service.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.common.error.BusinessAppException;
@@ -15,8 +14,6 @@ import ru.otus.order.service.model.dto.AddItemRequestDto;
 import ru.otus.order.service.model.dto.CartResponseDto;
 import ru.otus.order.service.model.dto.OrderResponseDto;
 import ru.otus.order.service.service.OrderService;
-
-import java.util.UUID;
 
 @Slf4j
 @Validated
@@ -51,7 +48,6 @@ public class OrderController {
         return service.submit(orderId, userCtx);
     }
 
-    //todo claims roles
     @GetMapping("/status/{id}")
     public OrderResponseDto getStatus(@UserContext UserCtx userCtx, @PathVariable Integer id) {
         var userId = userCtx.getId();

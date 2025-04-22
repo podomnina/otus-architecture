@@ -8,9 +8,13 @@ public interface MenuServiceClient {
 
     String DISH_URL = "/dish";
 
+    String LIST_URL = "/list";
+
     String RECIPE_URL = "/recipe";
 
     DishResponseDto getById(Integer dishId, Integer quantity);
+
+    DishListResponseDto getByIds(List<Integer> dishId);
 
     RecipeResponseDto getRecipes(List<Integer> dishIds);
 }

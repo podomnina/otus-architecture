@@ -26,7 +26,7 @@ public class NotificationServiceClientImpl implements NotificationServiceClient 
     public String sendEmail(EmailRequestDto dto) {
         return client.post()
                 .uri(BASE_INTERNAL_URL + SEND_EMAIL_URL)
-                .body(dto) //todo check
+                .body(dto)
                 .retrieve()
                 .body(String.class);
     }

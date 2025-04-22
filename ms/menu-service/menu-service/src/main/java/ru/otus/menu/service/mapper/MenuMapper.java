@@ -24,7 +24,7 @@ public interface MenuMapper {
         }
 
         return dishes.stream().map(this::map)
-                .sorted(Comparator.comparing(MenuItemDto::getPrice).reversed()) //todo check
+                .sorted(Comparator.comparing(MenuItemDto::getPrice).reversed())
                 .collect(Collectors.toList());
     }
 

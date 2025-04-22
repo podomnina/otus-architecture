@@ -23,11 +23,11 @@ public class Order {
     private UUID userId;
     private String email;
     @Enumerated(EnumType.STRING)
-    private OrderStatus status;
-    private OffsetDateTime createdAt;
+    private OrderStatus status = OrderStatus.CREATED;
+    private OffsetDateTime createdAt = OffsetDateTime.now();
     private OffsetDateTime updatedAt;
     @Column(precision = 8, scale = 2)
-    private BigDecimal totalPrice;
+    private BigDecimal totalPrice = BigDecimal.ZERO;
     private OffsetDateTime completedAt;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -38,5 +38,12 @@ public class Order {
         this.updatedAt = OffsetDateTime.now();
     }
 
+    public void changeStatus(OrderStatus newStatus) {
+        if (!status.canTransitionTo(newStatus)) {
+            throw new IllegalStateException(
+                    String.format("Cannot change status from %s to %s", status, newStatus));
+        }
+        this.status = newStatus;
+    }
 
 }

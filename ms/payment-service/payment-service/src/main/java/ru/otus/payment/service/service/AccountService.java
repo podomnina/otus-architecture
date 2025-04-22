@@ -14,7 +14,9 @@ import ru.otus.payment.service.mapper.AccountMapper;
 import ru.otus.payment.service.model.dto.AccountResponseDto;
 import ru.otus.payment.service.model.dto.FillUpAccountRequestDto;
 import ru.otus.payment.service.model.entity.Account;
+import ru.otus.payment.service.model.entity.Payment;
 import ru.otus.payment.service.repository.AccountRepository;
+import ru.otus.payment.service.repository.PaymentRepository;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -25,6 +27,7 @@ import java.util.UUID;
 public class AccountService {
 
     private final AccountRepository repository;
+    private final PaymentRepository paymentRepository;
     private final AccountMapper mapper;
     private final KafkaProducerService kafkaProducerService;
 
@@ -47,7 +50,7 @@ public class AccountService {
         }
 
         var account = accountOpt.get();
-        account.setAmount(account.getAmount().add(dto.getAmount())); //todo check
+        account.setAmount(account.getAmount().add(dto.getAmount()));
         var updatedAccount = repository.save(account);
         return mapper.map(updatedAccount);
     }
@@ -59,7 +62,15 @@ public class AccountService {
         var accountOpt = repository.findById(userId);
         if (accountOpt.isEmpty()) {
             log.error("Account for the user with id {} not found", userId);
-            throw new BusinessAppException("account.not.found", "Account not found");
+            var errorModel = PaymentConfirmationModel.error(orderId, "Account not found");
+            kafkaProducerService.send(BusinessTopics.ORDER_PAYMENT_CONFIRMATION, errorModel);
+            return;
+        }
+
+        var paymentAlreadyPassed = paymentRepository.existsByOrderIdAndAccountUserId(orderId, accountOpt.get().getUserId());
+        if (paymentAlreadyPassed) {
+            log.warn("Payment already processed. Skip it");
+            return;
         }
 
         var account = accountOpt.get();
@@ -70,13 +81,22 @@ public class AccountService {
             log.error("Insufficient funds for user with id: {} to pay for the order with id: {}", userId, orderId);
             var errorModel = PaymentConfirmationModel.error(orderId, "Insufficient funds");
             kafkaProducerService.send(BusinessTopics.ORDER_PAYMENT_CONFIRMATION, errorModel);
+            return;
+        } else {
+            log.debug("Current amount is enough to pay for the order");
+            account.setAmount(amountAfterPayment);
+
+            var payment = new Payment();
+            payment.setAccount(account);
+            payment.setOrderId(orderId);
+            payment.setAmount(model.getAmount());
+            repository.save(account);
+            paymentRepository.save(payment);
+
+            var successModel = PaymentConfirmationModel.success(orderId);
+            kafkaProducerService.send(BusinessTopics.ORDER_PAYMENT_CONFIRMATION, successModel);
+            return;
         }
-
-        account.setAmount(amountAfterPayment);
-        repository.save(account);
-
-        var successModel = PaymentConfirmationModel.success(orderId);
-        kafkaProducerService.send(BusinessTopics.ORDER_PAYMENT_CONFIRMATION, successModel);
     }
 
     @Transactional

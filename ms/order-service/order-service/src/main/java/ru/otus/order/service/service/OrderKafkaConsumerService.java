@@ -18,12 +18,22 @@ public class OrderKafkaConsumerService {
     @KafkaListener(topics = BusinessTopics.ORDER_RESERVATION_CONFIRMATION, groupId = "${spring.kafka.consumer.group-id}")
     public void listenOrderReservationConfirmation(ReservationConfirmationModel model) {
         log.debug("Received new reservation confirmation: {}", model);
-        service.handleReservationConfirmation(model);
+        try {
+            service.handleReservationConfirmation(model);
+        } catch (Exception e) {
+            log.error("Error while processing order reservation confirmation", e);
+            throw e;
+        }
     }
 
     @KafkaListener(topics = BusinessTopics.ORDER_PAYMENT_CONFIRMATION, groupId = "${spring.kafka.consumer.group-id}")
     public void listenOrderPaymentConfirmation(PaymentConfirmationModel model) {
         log.debug("Received new payment confirmation: {}", model);
-        service.handlePaymentConfirmation(model);
+        try {
+            service.handlePaymentConfirmation(model);
+        } catch (Exception e) {
+            log.error("Error while processing order payment confirmation", e);
+            throw e;
+        }
     }
 }

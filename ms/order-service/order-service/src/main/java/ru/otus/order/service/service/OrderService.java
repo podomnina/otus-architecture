@@ -109,7 +109,7 @@ public class OrderService {
         var order = orderMapper.map(cartOpt.get());
         order.setEmail(userCtx.getLogin());
         var createdOrder = orderProcessorService.createOrder(order, userCtx);
-        cartRepository.deleteById(userId); //todo check
+        cartRepository.deleteById(userId);
 
         return orderMapper.map(createdOrder);
     }

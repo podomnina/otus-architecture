@@ -9,6 +9,7 @@ import org.springframework.util.CollectionUtils;
 import ru.otus.common.error.BusinessAppException;
 import ru.otus.inventory.lib.api.InventoryServiceClient;
 import ru.otus.inventory.lib.api.ProductBalanceResponseDto;
+import ru.otus.menu.lib.api.DishListResponseDto;
 import ru.otus.menu.lib.api.RecipeResponseDto;
 import ru.otus.menu.lib.api.DishResponseDto;
 import ru.otus.menu.service.mapper.MenuMapper;
@@ -68,6 +69,19 @@ public class MenuService {
     }
 
     @Transactional
+    public DishListResponseDto getByIds(List<Integer> dishIds) {
+        var dishes = repository.findAllById(dishIds);
+        if (CollectionUtils.isEmpty(dishes)) {
+            log.error("No dishes in the menu");
+            return new DishListResponseDto(new ArrayList<>());
+        }
+
+        var filteredDishes = processDishes(dishes, Map.of());
+        var items = filteredDishes.stream().map(mapper::mapDish).collect(Collectors.toList());
+        return new DishListResponseDto(items);
+    }
+
+    @Transactional
     public RecipeResponseDto getRecipes(List<Integer> dishIds) {
         var dishProducts = dishProductRepository.findAllByDishIds(dishIds);
         if (CollectionUtils.isEmpty(dishProducts)) {
@@ -93,16 +107,11 @@ public class MenuService {
     private List<Dish> processDishes(List<Dish> dishes, Map<Integer, Integer> dishQuantityMap) {
         var productQuantityMap = dishes.stream()
                 .filter(d -> !CollectionUtils.isEmpty(d.getProducts()))
-                .flatMap(dish ->
-                    dish.getProducts().stream()
-                            .peek(p ->
-                                    p.setQuantity(
-                                            p.getQuantity()
-                                                    * dishQuantityMap.getOrDefault(p.getId().getDishId(), 1)))
-                )
+                .map(Dish::getProducts)
+                .flatMap(Collection::stream)
                 .collect(Collectors.groupingBy(
                         d -> d.getId().getProductId(),
-                        Collectors.summingInt(DishProduct::getQuantity)
+                        Collectors.summingInt(dp -> dp.getQuantity() * dishQuantityMap.getOrDefault(dp.getId().getDishId(), 1))
                 ));
         var productIds = productQuantityMap.keySet();
 
@@ -122,7 +131,10 @@ public class MenuService {
 
         var dishesToExclude = dishes.stream()
                 .filter(d -> d.getProducts().stream()
-                        .anyMatch(dp -> dp.getQuantity() > balance.getOrDefault(dp.getId().getProductId(), 0))
+                        .anyMatch(dp ->
+                                productQuantityMap.getOrDefault(dp.getId().getProductId(), 0)
+                                        > balance.getOrDefault(dp.getId().getProductId(), 0)
+                        )
                 )
                 .map(Dish::getId)
                 .collect(Collectors.toList());

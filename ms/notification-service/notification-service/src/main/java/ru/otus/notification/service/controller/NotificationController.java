@@ -30,7 +30,7 @@ public class NotificationController implements NotificationServiceClient {
             context.setVariable("subject", dto.getIntro());
             context.setVariable("text", dto.getMessage());
             service.sendEmailFromTemplate(dto.getTo(), dto.getSubject(), "email-template", context);
-            return "ok"; //todo
+            return "ok";
 
         } catch (Exception e) {
             throw new BusinessAppException("email.sending.error", "Unable to send the email");

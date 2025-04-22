@@ -17,6 +17,11 @@ public class NotificationKafkaConsumerService {
     @KafkaListener(topics = BusinessTopics.NOTIFICATION_SEND, groupId = "${spring.kafka.consumer.group-id}")
     public void listenSendNotification(SendNotificationModel model) {
         log.debug("Received send notification model: {}", model);
-        service.send(model);
+        try {
+            service.send(model);
+        } catch (Exception e) {
+            log.error("Error while processing send notification", e);
+            throw e;
+        }
     }
 }

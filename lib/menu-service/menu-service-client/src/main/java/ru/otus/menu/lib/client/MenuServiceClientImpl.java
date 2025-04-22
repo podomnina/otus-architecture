@@ -4,6 +4,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
+import ru.otus.menu.lib.api.DishListResponseDto;
 import ru.otus.menu.lib.api.RecipeResponseDto;
 import ru.otus.menu.lib.api.DishResponseDto;
 import ru.otus.menu.lib.api.MenuServiceClient;
@@ -35,6 +36,17 @@ public class MenuServiceClientImpl implements MenuServiceClient {
                 )
                 .retrieve()
                 .body(DishResponseDto.class);
+    }
+
+    @Override
+    public DishListResponseDto getByIds(List<Integer> dishIds) {
+        return client.get()
+                .uri(BASE_INTERNAL_URL + DISH_URL + LIST_URL,
+                        uriBuilder -> uriBuilder
+                                .queryParam("dishIds", dishIds).build()
+                )
+                .retrieve()
+                .body(DishListResponseDto.class);
     }
 
     @Override

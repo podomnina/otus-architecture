@@ -31,6 +31,11 @@ public class SendNotificationModel {
         return prepare(orderId, email, type);
     }
 
+    public static SendNotificationModel orderIsCooking(Integer orderId, String email) {
+        var type = NotificationType.ORDER_IS_COOKING;
+        return prepare(orderId, email, type);
+    }
+
     public static SendNotificationModel orderIsReady(Integer orderId, String email) {
         var type = NotificationType.ORDER_IS_READY;
         return prepare(orderId, email, type);
