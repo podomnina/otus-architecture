@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface OrderRepository extends JpaRepository<Order, UUID> {
+public interface OrderRepository extends JpaRepository<Order, Integer> {
 
     @Query("SELECT o FROM Order o WHERE o.status = :status AND o.createdAt >= :date")
     List<Order> findRecentByStatus(
@@ -25,9 +25,9 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     @Modifying
     @Query("UPDATE Order o SET o.status = :status WHERE o.id = :id")
-    void updateStatus(@Param("id") UUID id, @Param("status") OrderStatus status);
+    void updateStatus(@Param("id") Integer id, @Param("status") OrderStatus status);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT o FROM Order o WHERE o.id = :id")
-    Optional<Order> findByIdForUpdate(@Param("id") UUID id);
+    Optional<Order> findByIdForUpdate(@Param("id") Integer id);
 }

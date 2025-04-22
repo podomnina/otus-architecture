@@ -13,7 +13,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderResponseDto {
-    private UUID id;
+    private Integer id;
     private UUID userId;
     private OrderStatus status;
     private BigDecimal totalPrice;
@@ -23,7 +23,7 @@ public class OrderResponseDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Item {
-        private UUID dishId;
+        private Integer dishId;
         private String name;
         private BigDecimal price;
         private Integer quantity;

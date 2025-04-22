@@ -1,5 +1,6 @@
 package ru.otus.order.service.model.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,6 +13,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderItemId {
-    private UUID orderId;
-    private UUID dishId;
+    @Column(name = "order_id")
+    private Integer orderId;
+    @Column(name = "dish_id")
+    private Integer dishId;
 }

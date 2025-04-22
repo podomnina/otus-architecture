@@ -16,7 +16,7 @@ public class Inventory {
 
     @Id
     @Column(name = "product_id")
-    private UUID productId;
+    private Integer productId;
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY)

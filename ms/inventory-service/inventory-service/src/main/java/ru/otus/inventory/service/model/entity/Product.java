@@ -17,8 +17,8 @@ import java.util.UUID;
 public class Product {
 
     @Id
-    @GeneratedValue
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
 
     @Column(nullable = false, length = 1024)
     private String name;

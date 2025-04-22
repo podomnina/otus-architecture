@@ -39,7 +39,7 @@ public class InventoryService {
     private final CacheManager cacheManager;
     private final KafkaProducerService kafkaProducerService;
 
-    public ProductBalanceResponseDto getBalance(List<UUID> productIds) {
+    public ProductBalanceResponseDto getBalance(List<Integer> productIds) {
         if (CollectionUtils.isEmpty(productIds)) {
             log.warn("No products found for ids: {}", productIds);
             return new ProductBalanceResponseDto(Map.of());
@@ -60,7 +60,7 @@ public class InventoryService {
         var dishIds = new ArrayList<>(model.getDishQuantityMap().keySet());
         var orderId = model.getOrderId();
         log.debug("Trying to check products for dishes with ids: {} for order with id: {}", dishIds, orderId);
-
+/* todo потом кэшировать
         var cachedRecipes = getCachedRecipes(dishIds);
         var missingIds = dishIds.stream()
                 .filter(id -> !cachedRecipes.containsKey(id))
@@ -68,16 +68,17 @@ public class InventoryService {
 
         if (!missingIds.isEmpty()) {
             var freshRecipes = menuServiceClient.getRecipes(dishIds);
-            freshRecipes.forEach(recipe ->
-                    cacheManager.getCache(RECIPE_CASH_NAME).put(recipe.getDishId(), recipe)
-            );
-            cachedRecipes.putAll(freshRecipes.stream()
-                    .collect(Collectors.toMap(RecipeResponseDto::getDishId, Function.identity())));
-        }
+            freshRecipes.getDishProductQuantityMap().entrySet().forEach(dish -> {
+                cacheManager.getCache(RECIPE_CASH_NAME).put(dish.getKey(), dish.getValue());
+            });
 
-        var productQuantityList = cachedRecipes.values().stream()
-                .map(m -> m.getProductQuantityMap().entrySet())
-                .flatMap(Collection::stream)
+            cachedRecipes.putAll(freshRecipes.getDishProductQuantityMap());
+        }*/
+
+        var recipes = menuServiceClient.getRecipes(dishIds);
+
+        var productQuantityList = recipes.getDishProductQuantityMap().values().stream()
+                .flatMap(innerMap -> innerMap.entrySet().stream())
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
                         Map.Entry::getValue,
@@ -113,15 +114,17 @@ public class InventoryService {
         }
 
         log.debug("Shortage products id list is empty! Everything is fine, reserving products...");
+        var inventoryMap = inventories.stream().collect(Collectors.toMap(Inventory::getProductId, Inventory::getProduct));
+
         var reservedProductList = productQuantityList.entrySet().stream()
                 .map(entry -> {
                     var id = ReservedProductId.builder()
                             .orderId(orderId)
-                            .productId(entry.getKey())
                             .build();
                     return ReservedProduct.builder()
                             .id(id)
                             .quantity(entry.getValue())
+                            .product(inventoryMap.get(entry.getKey()))
                             .build();
                 })
                 .collect(Collectors.toList());
@@ -166,8 +169,8 @@ public class InventoryService {
 
         reservedProductRepository.deleteAllByOrderId(orderId);
     }
-
-    private Map<UUID, RecipeResponseDto> getCachedRecipes(List<UUID> ids) {
+/*
+    private Map<Integer, Map<Integer, Integer>> getCachedRecipes(List<Integer> ids) {
         Cache cache = cacheManager.getCache(RECIPE_CASH_NAME);
         return ids.stream()
                 .map(id -> {
@@ -176,5 +179,5 @@ public class InventoryService {
                 })
                 .filter(v -> v != null)
                 .collect(Collectors.toMap(RecipeResponseDto::getDishId, Function.identity()));
-    }
+    }*/
 }

@@ -2,6 +2,7 @@ package ru.otus.lib.exception;
 
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+@Slf4j
 @ControllerAdvice
 public class RestResponseEntityExceptionHandler
         extends ResponseEntityExceptionHandler {
@@ -29,6 +31,7 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler({ AuthenticationException.class })
     public ResponseEntity<ErrorDto> handleAuthenticationDeniedException(
             Exception ex, WebRequest request) {
+        log.error("Authentication exception occurred: ", ex);
         var message = ex.getMessage() != null ? ex.getMessage() : UNAUTHORIZED;
         var errorDto = ErrorDto.builder()
                 .code(UNAUTHORIZED)
@@ -40,6 +43,7 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler({ AccessDeniedException.class })
     public ResponseEntity<ErrorDto> handleAccessDeniedException(
             Exception ex, WebRequest request) {
+        log.error("Access Denied exception occurred: ", ex);
         var errorDto = ErrorDto.builder()
                 .code(UNAUTHORIZED)
                 .message("Access denied")
@@ -50,6 +54,7 @@ public class RestResponseEntityExceptionHandler
     @ExceptionHandler({ BusinessAppException.class })
     public ResponseEntity<ErrorDto> handleBusinessAppException(
             Exception ex, WebRequest request) {
+        log.error("Business App exception occurred: ", ex);
         var appException = (BusinessAppException) ex;
         var errorDto = ErrorDto.builder()
                 .code(appException.getCode())
@@ -63,6 +68,7 @@ public class RestResponseEntityExceptionHandler
 
     @ExceptionHandler({NoSuchElementException.class, EntityNotFoundException.class})
     public ResponseEntity<ErrorDto> handleNoSuchElementException(Exception ex, WebRequest request) {
+        log.error("Entity not found exception occurred: ", ex);
         var errorDto = ErrorDto.builder()
                 .code("not.found")
                 .message(ex.getMessage())
@@ -72,6 +78,7 @@ public class RestResponseEntityExceptionHandler
 
     @ExceptionHandler({EntityExistsException.class})
     public ResponseEntity<ErrorDto> handleEntityExistsException(Exception ex, WebRequest request) {
+        log.error("Entity exists exception occurred: ", ex);
         var errorDto = ErrorDto.builder()
                 .code("entity.exists")
                 .message(ex.getMessage())
@@ -81,6 +88,7 @@ public class RestResponseEntityExceptionHandler
 
     @ExceptionHandler({IllegalStateException.class, IllegalArgumentException.class})
     public ResponseEntity<ErrorDto> handleIllegalException(Exception ex, WebRequest request) {
+        log.error("Illegal state or argument exception occurred: ", ex);
         var errorDto = ErrorDto.builder()
                 .code("unprocessable.entity")
                 .message(ex.getMessage())
@@ -90,9 +98,10 @@ public class RestResponseEntityExceptionHandler
 
     @ExceptionHandler
     public ResponseEntity<ErrorDto> handle(Exception ex, WebRequest request) {
+        log.error("Exception occurred: ", ex);
         var errorDto = ErrorDto.builder()
                 .code("internal.system.error")
-                .message("Internal System Error")
+                .message("Сервис недоступен. Попробуйте позднее")
                 .build();
         return new ResponseEntity<ErrorDto>(errorDto, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

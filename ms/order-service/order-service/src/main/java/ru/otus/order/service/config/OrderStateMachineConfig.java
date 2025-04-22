@@ -2,31 +2,14 @@ package ru.otus.order.service.config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.statemachine.action.Action;
-import org.springframework.statemachine.config.EnableStateMachine;
-import org.springframework.statemachine.config.EnableStateMachineFactory;
-import org.springframework.statemachine.config.StateMachineConfigurerAdapter;
-import org.springframework.statemachine.config.builders.StateMachineStateConfigurer;
-import org.springframework.statemachine.config.builders.StateMachineTransitionConfigurer;
-import org.springframework.statemachine.listener.StateMachineListener;
-import org.springframework.statemachine.listener.StateMachineListenerAdapter;
-import org.springframework.statemachine.state.State;
-import ru.otus.common.UserCtx;
-import ru.otus.order.service.model.OrderEvent;
-import ru.otus.order.service.model.OrderStatus;
-import ru.otus.order.service.model.entity.Order;
-import ru.otus.order.service.service.OrderProcessorService;
-import ru.otus.order.service.service.OrderStateMachineService;
-
-import java.util.EnumSet;
 
 @Slf4j
 @Configuration
-@EnableStateMachineFactory(name = "stateMachineFactory")
+//@EnableStateMachineFactory(name = "stateMachineFactory")
 @RequiredArgsConstructor
-public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<OrderStatus, OrderEvent> {
+public class OrderStateMachineConfig {}
+        /*extends StateMachineConfigurerAdapter<OrderStatus, OrderEvent> {
 
     private final OrderStateMachineService stateMachineService;
 
@@ -125,7 +108,7 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
     @Bean
     public Action<OrderStatus, OrderEvent> cancelOrderAction() {
         return context -> {
-            Order order = context.getMessage().getHeaders().get("order", Order.class);
+            Order order = getOrderFromContext(context);
             UserCtx userCtx = context.getMessage().getHeaders().get("userCtx", UserCtx.class);
             var event = context.getEvent();
             stateMachineService.cancelOrderAction(order, userCtx, event);
@@ -142,4 +125,8 @@ public class OrderStateMachineConfig extends StateMachineConfigurerAdapter<Order
             }
         };
     }
-}
+
+    private Order getOrderFromContext(StateContext<OrderStatus, OrderEvent> context) {
+        return context.getExtendedState().get("order", Order.class);
+    }
+}*/

@@ -26,7 +26,7 @@ public class InventoryServiceClientImpl implements InventoryServiceClient {
     }
 
     @Override
-    public ProductBalanceResponseDto getActualBalance(List<UUID> productIds) {
+    public ProductBalanceResponseDto getActualBalance(List<Integer> productIds) {
         return client.get()
                 .uri(BASE_INTERNAL_URL + BALANCE_URL,
                         uriBuilder -> uriBuilder

@@ -3,9 +3,7 @@ package ru.otus.order.service.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.statemachine.config.StateMachineFactory;
 import org.springframework.stereotype.Service;
-import ru.otus.common.UserCtx;
 import ru.otus.common.error.BusinessAppException;
 import ru.otus.lib.kafka.model.PaymentProcessModel;
 import ru.otus.lib.kafka.model.ReleaseIngredientsModel;
@@ -29,11 +27,10 @@ public class OrderStateMachineService {
     private final CartRepository cartRepository;
     private final CartMapper cartMapper;
 
-    @Transactional
     public void sendToPaymentAction(Order order) {
         var orderId = order.getId();
         log.debug("Preparing order with id: {} for the payment action", orderId);
-        orderRepository.updateStatus(orderId, OrderStatus.PENDING_PAYMENT); //todo?
+        orderRepository.updateStatus(orderId, OrderStatus.PENDING_PAYMENT);
 
         var userId = order.getUserId();
         var amount = order.getTotalPrice();
@@ -52,21 +49,21 @@ public class OrderStateMachineService {
     }
 
     @Transactional
-    public void sendToReadyAction(Order order, UserCtx userCtx) {
+    public void sendToReadyAction(Order order) {
         log.debug("Sending ready action email info for order with id: {}", order.getId());
-        var notificationModel = SendNotificationModel.orderIsReady(userCtx);
+        var notificationModel = SendNotificationModel.orderIsReady(order.getId(), order.getEmail());
         kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);
     }
 
     @Transactional
-    public void sendToDeliveredAction(Order order, UserCtx userCtx) {
+    public void sendToDeliveredAction(Order order) {
         log.debug("Sending delivered action email info for order with id: {}", order.getId());
-        var notificationModel = SendNotificationModel.orderIsDelivered(userCtx);
+        var notificationModel = SendNotificationModel.orderIsDelivered(order.getId(), order.getEmail());
         kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);
     }
 
     @Transactional
-    public void cancelOrderAction(Order order, UserCtx userCtx, OrderEvent event) {
+    public void cancelOrderAction(Order order, OrderEvent event) {
         var orderId = order.getId();
         log.debug("Preparing order with id: {} for the cancelling because of the event: {}", order.getId(), event);
         orderRepository.updateStatus(orderId, OrderStatus.CANCELLED); //todo?
@@ -78,15 +75,15 @@ public class OrderStateMachineService {
         var releaseModel = ReleaseIngredientsModel.initRelease(orderId);
         kafkaProducerService.send(BusinessTopics.ORDER_RELEASE_INGREDIENTS, releaseModel);
 
-        var notificationModel = prepareErrorNotification(userCtx, event);
+        var notificationModel = prepareErrorNotification(orderId, order.getEmail(), event);
         kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);
     }
 
-    private SendNotificationModel prepareErrorNotification(UserCtx userCtx, OrderEvent event) {
+    private SendNotificationModel prepareErrorNotification(Integer orderId, String email, OrderEvent event) {
         if (OrderEvent.INGREDIENTS_NOT_AVAILABLE == event) {
-            return SendNotificationModel.orderCancelledByIngredients(userCtx);
+            return SendNotificationModel.orderCancelledByIngredients(orderId, email);
         } else if (OrderEvent.PAYMENT_FAILED == event) {
-            return SendNotificationModel.orderCancelledByPayment(userCtx);
+            return SendNotificationModel.orderCancelledByPayment(orderId, email);
         }
 
         //todo

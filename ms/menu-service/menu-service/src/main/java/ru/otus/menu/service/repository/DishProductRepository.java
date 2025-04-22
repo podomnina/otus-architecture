@@ -14,5 +14,5 @@ import java.util.UUID;
 public interface DishProductRepository extends JpaRepository<DishProduct, DishProductId> {
 
     @Query("SELECT dp FROM DishProduct dp WHERE dp.id.dishId IN :dishIds")
-    List<DishProduct> findAllByDishIds(@Param("dishIds") List<UUID> dishIds);
+    List<DishProduct> findAllByDishIds(@Param("dishIds") List<Integer> dishIds);
 }

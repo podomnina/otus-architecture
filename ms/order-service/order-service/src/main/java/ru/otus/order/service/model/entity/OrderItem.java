@@ -12,10 +12,11 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "order_item", schema = "order")
+@Table(name = "order_item", schema = "\"order\"")
 public class OrderItem {
     @EmbeddedId
     private OrderItemId id;
+    private String name;
 
     @Column(precision = 8, scale = 2)
     private BigDecimal price;
@@ -25,4 +26,18 @@ public class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
+
+    //@Column(name = "dish_id", insertable = false, updatable = false)
+    //private Integer dishId;
+
+    //@PrePersist
+    //protected void onCreate() {
+    //    if (this.id == null) {
+    //        this.id = new OrderItemId();
+    //    }
+//
+    //    if (this.dishId != null) {
+    //        this.id.setDishId(this.dishId);
+    //    }
+    //}
 }

@@ -31,6 +31,9 @@ spring:
     schemas:
       - order
 
+cart:
+  ttl-minutes: 60
+
 db:
   url:
   username:

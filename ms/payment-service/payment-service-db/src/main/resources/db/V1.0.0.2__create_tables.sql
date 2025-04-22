@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS payment.account
 CREATE TABLE IF NOT EXISTS payment.payment
 (
     id uuid PRIMARY KEY,
-    order_id uuid not null,
+    order_id int not null,
     account_id uuid REFERENCES payment.account (user_id) NOT NULL,
     amount numeric(8, 2) not null default 0,
     status varchar not null,

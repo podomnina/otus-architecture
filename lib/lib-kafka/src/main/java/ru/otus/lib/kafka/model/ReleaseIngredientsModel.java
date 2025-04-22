@@ -12,17 +12,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReleaseIngredientsModel {
-    private UUID orderId;
+    private Integer orderId;
     private ReleaseType type;
 
-    public static ReleaseIngredientsModel initCooking(UUID orderId) {
+    public static ReleaseIngredientsModel initCooking(Integer orderId) {
         return ReleaseIngredientsModel.builder()
                 .orderId(orderId)
                 .type(ReleaseType.COOKING)
                 .build();
     }
 
-    public static ReleaseIngredientsModel initRelease(UUID orderId) {
+    public static ReleaseIngredientsModel initRelease(Integer orderId) {
         return ReleaseIngredientsModel.builder()
                 .orderId(orderId)
                 .type(ReleaseType.RELEASE)

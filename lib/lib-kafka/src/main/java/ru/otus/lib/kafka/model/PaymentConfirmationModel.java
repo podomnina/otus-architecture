@@ -12,18 +12,18 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentConfirmationModel {
-    private UUID orderId;
+    private Integer orderId;
     private ProcessStatus status;
     private String reason;
 
-    public static PaymentConfirmationModel success(UUID orderId) {
+    public static PaymentConfirmationModel success(Integer orderId) {
         return PaymentConfirmationModel.builder()
                 .orderId(orderId)
                 .status(ProcessStatus.SUCCESS)
                 .build();
     }
 
-    public static PaymentConfirmationModel error(UUID orderId, String reason) {
+    public static PaymentConfirmationModel error(Integer orderId, String reason) {
         return PaymentConfirmationModel.builder()
                 .orderId(orderId)
                 .reason(reason)

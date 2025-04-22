@@ -8,10 +8,12 @@ import org.springframework.util.CollectionUtils;
 import ru.otus.common.error.BusinessAppException;
 import ru.otus.common.Roles;
 import ru.otus.common.UserCtx;
+import ru.otus.menu.lib.api.DishResponseDto;
 import ru.otus.menu.lib.api.MenuServiceClient;
 import ru.otus.order.service.mapper.CartMapper;
 import ru.otus.order.service.mapper.OrderMapper;
 import ru.otus.order.service.model.OrderEvent;
+import ru.otus.order.service.model.OrderStatus;
 import ru.otus.order.service.model.dto.AddItemRequestDto;
 import ru.otus.order.service.model.dto.CartResponseDto;
 import ru.otus.order.service.model.dto.OrderResponseDto;
@@ -20,10 +22,7 @@ import ru.otus.order.service.repository.CartRepository;
 import ru.otus.order.service.repository.OrderRepository;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -37,7 +36,7 @@ public class OrderService {
     private final OrderMapper orderMapper;
     private final OrderProcessorService orderProcessorService;
 
-    //todo transactional?
+    @Transactional
     public CartResponseDto addItem(AddItemRequestDto dto, UUID userId) {
         Cart cart;
         var cartOpt = cartRepository.findById(userId);
@@ -46,47 +45,45 @@ public class OrderService {
             cart = cartOpt.get();
         } else {
             log.debug("No cart for current user with id: {}. Creating it...", userId);
-            cart = new Cart();
-            cart.setUserId(userId);
-            cart.setItems(new ArrayList<>());
+            cart = Cart.newCart(userId);
         }
 
         var newDishId = dto.getDishId();
         var quantity = dto.getQuantity();
 
         Optional<Cart.Item> existingDish = !CollectionUtils.isEmpty(cart.getItems()) ?
-                cart.getItems().stream().filter(d -> d.getDishId().equals(newDishId)).findFirst()
+                cart.getItems().values().stream().filter(d -> d != null && d.getDishId().equals(newDishId)).findFirst()
                 : Optional.empty();
         if (existingDish.isPresent()) {
             quantity = quantity + existingDish.get().getQuantity();
         }
 
-        var dish = menuServiceClient.getById(newDishId, quantity);
-        if (Boolean.FALSE == dish.getIsAvailable()) {
+        DishResponseDto dish = null;
+        try {
+            dish = menuServiceClient.getById(newDishId, quantity);
+        } catch (Exception e) {
+            log.error("Unable to get dish info", e);
+        }
+
+        if (dish == null || Boolean.FALSE == dish.getIsAvailable()) {
             log.error("Current item with id {} is unavailable", newDishId);
             throw new BusinessAppException("dish.is.unavailable", "Current item is unavailable for the order");
         }
 
         var newDish = new Cart.Item();
-        newDish.setDishId(dish.getDishId());
+        newDish.setDishId(dish.getId());
         newDish.setName(dish.getName());
         newDish.setPrice(dish.getPrice());
+        newDish.setQuantity(dto.getQuantity() != null ? dto.getQuantity() : 1);
         newDish.setIsAvailable(dish.getIsAvailable());
 
-        List<Cart.Item> items = cart.getItems() != null ? cart.getItems() : new ArrayList();
-        items.add(newDish);
+        cart.addItem(newDish);
 
-        var totalPrice = items.stream()
-                .map(Cart.Item::getPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        cart.setTotalPrice(totalPrice);
-        cart.setItems(items);
-        //todo если добавляют в корзину, то продлевать время хранения в редисе
         cartRepository.save(cart);
         return cartMapper.map(cart);
     }
 
+    @Transactional
     public CartResponseDto getCart(UUID userId) {
         var cartOpt = cartRepository.findById(userId);
         if (cartOpt.isPresent()) {
@@ -94,17 +91,14 @@ public class OrderService {
             return cartMapper.map(cartOpt.get());
         } else {
             log.debug("No cart for current user with id: {}. Creating it...", userId);
-            var cart = new Cart();
-            cart.setUserId(userId);
-            cart.setItems(new ArrayList<>());
-            cart.setTotalPrice(BigDecimal.ZERO);
+            var cart = Cart.newCart(userId);
             cartRepository.save(cart);
             return cartMapper.map(cart);
         }
     }
 
     @Transactional
-    public OrderResponseDto submit(UUID orderId, UserCtx userCtx) {
+    public OrderResponseDto submit(Integer orderId, UserCtx userCtx) {
         var userId = userCtx.getId();
         var cartOpt = cartRepository.findById(userId);
         if (cartOpt.isEmpty()) {
@@ -112,14 +106,16 @@ public class OrderService {
             throw new BusinessAppException("cart.not.found", "Cart not found");
         }
 
-        var order = orderMapper.map(cartOpt.get(), orderId);
+        var order = orderMapper.map(cartOpt.get());
+        order.setEmail(userCtx.getLogin());
         var createdOrder = orderProcessorService.createOrder(order, userCtx);
         cartRepository.deleteById(userId); //todo check
 
         return orderMapper.map(createdOrder);
     }
 
-    public OrderResponseDto getStatus(UUID orderId, UserCtx userCtx) {
+    @Transactional
+    public OrderResponseDto getStatus(Integer orderId, UserCtx userCtx) {
         var orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isEmpty()) {
             log.error("Order with id {} not found", orderId);
@@ -127,7 +123,7 @@ public class OrderService {
         }
 
         var order = orderOpt.get();
-        if (userCtx.getRoles().contains(Roles.CLIENT) && order.getUserId() != userCtx.getId()) {
+        if (userCtx.getRoles().contains(Roles.CLIENT) && !Objects.equals(order.getUserId(), userCtx.getId())) {
             log.error("User with id {} trying to get not own order with id {}", userCtx.getId(), orderId);
             throw new BusinessAppException("order.not.found", "Order not found");
         }
@@ -136,8 +132,8 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponseDto setStatus(UUID orderId, OrderEvent event) {
-        var order = orderProcessorService.setStatus(orderId, event);
+    public OrderResponseDto setStatus(Integer orderId, OrderStatus status) {
+        var order = orderProcessorService.setStatus(orderId, status);
         return orderMapper.map(order);
     }
 }

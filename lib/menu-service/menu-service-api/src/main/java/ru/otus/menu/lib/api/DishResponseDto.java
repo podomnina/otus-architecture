@@ -5,13 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class DishResponseDto {
-    private UUID dishId;
+    private Integer id;
     private String name;
     private BigDecimal price;
     private Boolean isAvailable;

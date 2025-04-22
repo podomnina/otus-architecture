@@ -27,7 +27,7 @@ public class MenuServiceClientImpl implements MenuServiceClient {
     }
 
     @Override
-    public DishResponseDto getById(UUID dishId, Integer quantity) {
+    public DishResponseDto getById(Integer dishId, Integer quantity) {
         return client.get()
                 .uri(BASE_INTERNAL_URL + DISH_URL + "/" + dishId,
                         uriBuilder -> uriBuilder
@@ -38,13 +38,13 @@ public class MenuServiceClientImpl implements MenuServiceClient {
     }
 
     @Override
-    public List<RecipeResponseDto> getRecipes(List<UUID> dishIds) {
+    public RecipeResponseDto getRecipes(List<Integer> dishIds) {
         return client.get()
                 .uri(BASE_INTERNAL_URL + RECIPE_URL,
                         uriBuilder -> uriBuilder
                                 .queryParam("dishIds", dishIds).build()
                 )
                 .retrieve()
-                .body(List.class); //todo?
+                .body(RecipeResponseDto.class);
     }
 }

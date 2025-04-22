@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MenuItemDto {
-    private UUID id;
+    private Integer id;
     private String name;
     private BigDecimal price;
 }

@@ -11,5 +11,5 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductBalanceResponseDto {
-    private Map<UUID, Integer> balance;
+    private Map<Integer, Integer> balance;
 }

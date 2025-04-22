@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.otus.lib.kafka.model.PaymentConfirmationModel;
-import ru.otus.lib.kafka.model.PaymentProcessModel;
 import ru.otus.lib.kafka.model.ReservationConfirmationModel;
 import ru.otus.lib.kafka.service.BusinessTopics;
 

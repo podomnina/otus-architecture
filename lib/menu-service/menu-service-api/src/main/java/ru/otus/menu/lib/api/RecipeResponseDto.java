@@ -16,6 +16,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecipeResponseDto {
-    private UUID dishId;
-    private Map<UUID, Integer> productQuantityMap;
+    //dish: <product: quantity>
+    private Map<Integer, Map<Integer, Integer>> dishProductQuantityMap;
 }

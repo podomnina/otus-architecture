@@ -14,6 +14,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReservedProductId {
-    private UUID orderId;
-    private UUID productId;
+    private Integer orderId;
+    private Integer productId;
 }

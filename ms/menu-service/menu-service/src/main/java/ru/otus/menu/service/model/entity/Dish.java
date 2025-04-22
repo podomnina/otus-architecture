@@ -18,8 +18,8 @@ import java.util.UUID;
 @Table(name = "dish", schema = "menu")
 public class Dish {
     @Id
-    @UuidGenerator
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private String name;
     @Enumerated(EnumType.STRING)
     private DishCategory category;

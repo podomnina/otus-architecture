@@ -3,8 +3,10 @@ package ru.otus.menu.service.service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import ru.otus.common.error.BusinessAppException;
 import ru.otus.inventory.lib.api.InventoryServiceClient;
 import ru.otus.inventory.lib.api.ProductBalanceResponseDto;
 import ru.otus.menu.lib.api.RecipeResponseDto;
@@ -16,10 +18,7 @@ import ru.otus.menu.service.model.entity.DishProduct;
 import ru.otus.menu.service.repository.DishProductRepository;
 import ru.otus.menu.service.repository.DishRepository;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -40,51 +39,67 @@ public class MenuService {
             return new MenuListResponseDto();
         }
 
-        var filteredDishes = processDishes(dishes);
+        var filteredDishes = processDishes(dishes, Map.of());
 
         var menu = mapper.mapMenu(filteredDishes);
         return menu;
     }
 
     @Transactional
-    public DishResponseDto getById(UUID dishId, Integer quantity) {
-        var dish = repository.findById(dishId);
-        if (dish.isEmpty()) {
+    public DishResponseDto getById(Integer dishId, Integer quantity) {
+        var dishOpt = repository.findById(dishId);
+        if (dishOpt.isEmpty()) {
             log.error("Dish with id {} not found", dishId);
             throw new NoSuchElementException("Dish with id " + dishId + " not found");
         }
-        //todo check with quantity!!!
-        var filteredDish = processDishes(List.of(dish.get()));
-        return mapper.mapDish(filteredDish.get(0)); //todo check!!!
+
+        var map = Map.of(dishId, quantity);
+        var dish = dishOpt.get();
+        var filteredDish = processDishes(List.of(dish), map);
+        var resp = mapper.mapDish(dish);
+        if (CollectionUtils.isEmpty(filteredDish)) {
+            log.error("Quantity of products in inventory is not enough for the dish with id {} and quantity {}", dishId, quantity);
+            resp.setIsAvailable(false);
+        } else {
+            log.debug("There is enough products for the dish with id: {} and quantity: {}", dishId, quantity);
+            resp.setIsAvailable(true);
+        }
+        return resp;
     }
 
     @Transactional
-    public List<RecipeResponseDto> getRecipes(List<UUID> dishIds) {
+    public RecipeResponseDto getRecipes(List<Integer> dishIds) {
         var dishProducts = dishProductRepository.findAllByDishIds(dishIds);
         if (CollectionUtils.isEmpty(dishProducts)) {
             log.warn("Dish list for ids: {} is empty", dishIds);
-            return List.of();
+            return new RecipeResponseDto(Map.of());
         }
 
-        return dishProducts.stream().collect(Collectors.groupingBy(dp -> dp.getId().getDishId()))
-                .entrySet().stream().map(entry -> {
-                    var map = entry.getValue().stream()
-                            .collect(Collectors.toMap(
-                                    v -> v.getId().getProductId(),
-                                    v -> v.getQuantity(),
-                                    (v1, v2) -> v1 + v2)
-                            );
-                    return RecipeResponseDto.builder()
-                            .dishId(entry.getKey())
-                            .productQuantityMap(map)
-                            .build();
-                }).collect(Collectors.toList());
+        var dishProductQuantityMap = dishProducts.stream()
+                .collect(Collectors.groupingBy(dp -> dp.getId().getDishId()))
+                .entrySet().stream().collect(Collectors.toMap(
+                        i -> i.getKey(),
+                        i -> i.getValue().stream()
+                                .collect(Collectors.toMap(
+                                        v -> v.getId().getProductId(),
+                                        v -> v.getQuantity(),
+                                        (v1, v2) -> v1 + v2)
+                                )
+
+                ));
+        return new RecipeResponseDto(dishProductQuantityMap);
     }
 
-    private List<Dish> processDishes(List<Dish> dishes) {
-        var productQuantityMap = dishes.stream() //todo может мапа не нужна
+    private List<Dish> processDishes(List<Dish> dishes, Map<Integer, Integer> dishQuantityMap) {
+        var productQuantityMap = dishes.stream()
                 .filter(d -> !CollectionUtils.isEmpty(d.getProducts()))
-                .flatMap(dish -> dish.getProducts().stream())
+                .flatMap(dish ->
+                    dish.getProducts().stream()
+                            .peek(p ->
+                                    p.setQuantity(
+                                            p.getQuantity()
+                                                    * dishQuantityMap.getOrDefault(p.getId().getDishId(), 1)))
+                )
                 .collect(Collectors.groupingBy(
                         d -> d.getId().getProductId(),
                         Collectors.summingInt(DishProduct::getQuantity)
@@ -118,7 +133,7 @@ public class MenuService {
         } else {
             log.warn("The list of dished to exclude because there is a lack of products: {}", dishesToExclude);
             return dishes.stream()
-                    .filter(d -> dishesToExclude.contains(d.getId()))
+                    .filter(d -> !dishesToExclude.contains(d.getId()))
                     .collect(Collectors.toList());
         }
     }

@@ -12,6 +12,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DishProductId {
-    private UUID dishId;
-    private UUID productId;
+    private Integer dishId;
+    private Integer productId;
 }

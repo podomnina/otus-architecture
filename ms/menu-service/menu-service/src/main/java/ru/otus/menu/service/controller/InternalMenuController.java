@@ -22,8 +22,8 @@ public class InternalMenuController implements MenuServiceClient {
     private final MenuService service;
 
     @Override
-    @GetMapping(MenuServiceClient.DISH_URL)
-    public DishResponseDto getById(@PathVariable UUID dishId,
+    @GetMapping(MenuServiceClient.DISH_URL + "/{dishId}")
+    public DishResponseDto getById(@PathVariable Integer dishId,
                                    @RequestParam Integer quantity) {
         log.debug("Trying to get dish by id: {}", dishId);
         return service.getById(dishId, quantity);
@@ -31,7 +31,7 @@ public class InternalMenuController implements MenuServiceClient {
 
     @Override
     @GetMapping(MenuServiceClient.RECIPE_URL)
-    public List<RecipeResponseDto> getRecipes(@RequestParam List<UUID> dishIds) {
+    public RecipeResponseDto getRecipes(@RequestParam List<Integer> dishIds) {
         log.debug("Trying to get dish products for dishes: {}", dishIds);
         return service.getRecipes(dishIds);
     }

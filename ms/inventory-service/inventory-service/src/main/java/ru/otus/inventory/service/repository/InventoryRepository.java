@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface InventoryRepository extends JpaRepository<Inventory, UUID> {
+public interface InventoryRepository extends JpaRepository<Inventory, Integer> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT i FROM Inventory i WHERE i.productId IN :productIds")
-    List<Inventory> findForUpdateAllByProductIds(Iterable<UUID> productIds);
+    List<Inventory> findForUpdateAllByProductIds(Iterable<Integer> productIds);
 }

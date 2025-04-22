@@ -12,6 +12,6 @@ import java.util.UUID;
 @AllArgsConstructor
 public class AddItemRequestDto {
     @NotNull
-    private UUID dishId;
+    private Integer dishId;
     private Integer quantity;
 }

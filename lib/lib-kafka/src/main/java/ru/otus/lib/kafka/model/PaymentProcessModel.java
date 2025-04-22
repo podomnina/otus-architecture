@@ -13,11 +13,11 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PaymentProcessModel {
-    private UUID orderId;
+    private Integer orderId;
     private UUID userId;
     private BigDecimal amount;
 
-    public static PaymentProcessModel init(UUID orderId, UUID userId, BigDecimal amount) {
+    public static PaymentProcessModel init(Integer orderId, UUID userId, BigDecimal amount) {
         return new PaymentProcessModel(orderId, userId, amount);
     }
 }

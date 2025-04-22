@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface DishRepository extends JpaRepository<Dish, UUID> {
+public interface DishRepository extends JpaRepository<Dish, Integer> {
 
     @Query("SELECT DISTINCT d FROM Dish d LEFT JOIN FETCH d.products")
     List<Dish> findAllWithProducts();

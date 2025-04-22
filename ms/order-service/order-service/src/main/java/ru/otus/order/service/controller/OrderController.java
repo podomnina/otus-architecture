@@ -10,6 +10,7 @@ import ru.otus.common.Roles;
 import ru.otus.common.UserCtx;
 import ru.otus.lib.ctx.UserContext;
 import ru.otus.order.service.model.OrderEvent;
+import ru.otus.order.service.model.OrderStatus;
 import ru.otus.order.service.model.dto.AddItemRequestDto;
 import ru.otus.order.service.model.dto.CartResponseDto;
 import ru.otus.order.service.model.dto.OrderResponseDto;
@@ -44,29 +45,37 @@ public class OrderController {
 
     @PostMapping("/cart/submit")
     public OrderResponseDto submit(@UserContext UserCtx userCtx,
-                                   @RequestHeader("idempotency-key") UUID orderId) { //todo???
+                                   @RequestHeader(name = "idempotency-key", required = false) Integer orderId) { //todo???
         var userId = userCtx.getId();
         log.debug("Trying to submit cart by user with id: {}", userId);
         return service.submit(orderId, userCtx);
     }
 
     //todo claims roles
+    @GetMapping("/status/{id}")
+    public OrderResponseDto getStatus(@UserContext UserCtx userCtx, @PathVariable Integer id) {
+        var userId = userCtx.getId();
+        log.debug("Trying to check order status by user with id: {} for order with id: {}", userId, id);
+        return service.getStatus(id, userCtx);
+    }
+
+    //todo claims roles
     @PostMapping("/status/{id}")
     public OrderResponseDto setStatus(@UserContext UserCtx userCtx,
-                                      @PathVariable UUID id,
-                                      @RequestParam OrderEvent event) {
-        log.debug("Trying to change status for order with id {} by user: {} to status: {}", id, userCtx, event);
+                                      @PathVariable Integer id,
+                                      @RequestParam OrderStatus status) {
+        log.debug("Trying to change status for order with id {} by user: {} to status: {}", id, userCtx, status);
         if (userCtx.getRoles().contains(Roles.CLIENT)) { //todo
             log.error("You are not allowed to change status");
             throw new BusinessAppException("order.status.transition.not.allowed", "Change status is not allowed", "403"); //todo check
         }
 
-        if (!OrderEvent.isValidForManualTransition(event)) {
-            log.error("Manual transition for {} event is unavailable", event);
+        if (!OrderStatus.isValidForManualTransition(status)) {
+            log.error("Manual transition for {} status is unavailable", status);
             throw new BusinessAppException("order.status.transition.invalid", "Invalid status transition");
         }
 
-        return service.setStatus(id, event);
+        return service.setStatus(id, status);
     }
 
 }

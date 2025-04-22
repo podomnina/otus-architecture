@@ -2,7 +2,6 @@ package ru.otus.order.service.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.UuidGenerator;
 import ru.otus.order.service.model.OrderStatus;
 
 import java.math.BigDecimal;
@@ -11,7 +10,7 @@ import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "order", schema = "order")
+@Table(name = "\"order\"", schema = "\"order\"")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -19,9 +18,10 @@ import java.util.UUID;
 @Builder
 public class Order {
     @Id
-    @UuidGenerator
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     private UUID userId;
+    private String email;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
     private OffsetDateTime createdAt;
@@ -37,4 +37,6 @@ public class Order {
     protected void onUpdate() {
         this.updatedAt = OffsetDateTime.now();
     }
+
+
 }

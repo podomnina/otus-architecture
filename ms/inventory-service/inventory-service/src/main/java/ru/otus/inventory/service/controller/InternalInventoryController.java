@@ -12,7 +12,6 @@ import ru.otus.inventory.lib.api.ProductBalanceResponseDto;
 import ru.otus.inventory.service.service.InventoryService;
 
 import java.util.List;
-import java.util.UUID;
 
 @Slf4j
 @Validated
@@ -25,7 +24,7 @@ public class InternalInventoryController implements InventoryServiceClient {
 
     @Override
     @GetMapping(InventoryServiceClient.BALANCE_URL)
-    public ProductBalanceResponseDto getActualBalance(@RequestParam List<UUID> productIds) {
+    public ProductBalanceResponseDto getActualBalance(@RequestParam List<Integer> productIds) {
         log.debug("Trying to check balance for products with ids: {}", productIds);
         return service.getBalance(productIds);
     }

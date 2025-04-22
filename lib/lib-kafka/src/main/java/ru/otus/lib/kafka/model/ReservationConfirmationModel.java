@@ -12,18 +12,18 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ReservationConfirmationModel {
-    private UUID orderId;
+    private Integer orderId;
     private ProcessStatus status;
     private String reason;
 
-    public static ReservationConfirmationModel success(UUID orderId) {
+    public static ReservationConfirmationModel success(Integer orderId) {
         return ReservationConfirmationModel.builder()
                 .orderId(orderId)
                 .status(ProcessStatus.SUCCESS)
                 .build();
     }
 
-    public static ReservationConfirmationModel error(UUID orderId, String reason) {
+    public static ReservationConfirmationModel error(Integer orderId, String reason) {
         return ReservationConfirmationModel.builder()
                 .orderId(orderId)
                 .reason(reason)

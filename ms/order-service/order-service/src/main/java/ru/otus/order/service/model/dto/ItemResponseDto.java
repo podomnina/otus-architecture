@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ItemResponseDto {
-    private UUID dishId;
+    private Integer dishId;
     private String name;
     private BigDecimal price;
     private Integer quantity;

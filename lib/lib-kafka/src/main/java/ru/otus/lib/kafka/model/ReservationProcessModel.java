@@ -14,10 +14,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReservationProcessModel {
-    private UUID orderId;
-    private Map<UUID, Integer> dishQuantityMap;
+    private Integer orderId;
+    private Map<Integer, Integer> dishQuantityMap;
 
-    public static ReservationProcessModel initReserve(UUID orderId, Map<UUID, Integer> dishQuantityMap) {
+    public static ReservationProcessModel initReserve(Integer orderId, Map<Integer, Integer> dishQuantityMap) {
         return ReservationProcessModel.builder()
                 .orderId(orderId)
                 .dishQuantityMap(dishQuantityMap)
