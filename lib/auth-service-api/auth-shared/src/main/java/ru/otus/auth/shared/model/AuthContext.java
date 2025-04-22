@@ -12,9 +12,9 @@ import java.util.UUID;
 public class AuthContext implements UserDetails {
     private UUID id;
     private String login;
-    private UUID restaurantId;
-    private String restaurantCode;
+    private String firstName;
     private String password;
+    private List<String> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

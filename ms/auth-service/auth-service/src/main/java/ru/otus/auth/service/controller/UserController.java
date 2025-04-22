@@ -5,12 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.otus.auth.service.model.dto.user.CreateUserRequestDto;
 import ru.otus.auth.service.model.dto.user.UpdateUserRequestDto;
 import ru.otus.auth.service.model.dto.user.UserListResponseDto;
 import ru.otus.auth.service.model.dto.user.UserResponseDto;
 import ru.otus.auth.service.service.UserService;
-import ru.otus.auth.shared.model.UserCtx;
+import ru.otus.common.UserCtx;
 
 import java.util.UUID;
 

@@ -9,11 +9,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Service;
-import ru.otus.auth.shared.model.UserCtx;
+import ru.otus.common.UserCtx;
 
 import java.security.Key;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -52,7 +55,7 @@ public class JwtService {
         var expiration = expirationTime != -1 ? new Date(System.currentTimeMillis() + expirationTime) : null;
         return Jwts.builder()
                 .setSubject(subject)
-                //.claim("roles", roles) todo add roles
+                .claim("roles", userCtx.getRoles())
                 .setIssuedAt(new Date())
                 .setExpiration(expiration)
                 .signWith(key)
@@ -89,6 +92,35 @@ public class JwtService {
                     .getBody()
                     .getSubject();
             return objectMapper.readValue(subject, UserCtx.class);
+    }
+
+    public Collection<? extends GrantedAuthority> extractAuthorities(String token) {
+        Claims claims = extractAllClaims(token);
+
+        if (claims.get("authorities") != null) {
+            @SuppressWarnings("unchecked")
+            List<String> authorities = claims.get("authorities", List.class);
+            return authorities.stream()
+                    .map(SimpleGrantedAuthority::new)
+                    .collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
+    }
+
+    private Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
+    public String getPayloadFromToken(String token) {
+        String[] chunks = token.split("\\.");
+        //Base64.Decoder decoder = Base64.getUrlDecoder();
+        //return new String(decoder.decode(chunks[1]));
+        return chunks[1];
     }
 
     private Key getSigningKey(String secret) {

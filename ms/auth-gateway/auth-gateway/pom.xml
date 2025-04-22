@@ -4,9 +4,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>ru.otus</groupId>
-        <artifactId>ms-parent</artifactId>
+        <artifactId>gw-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../../../parent-pom/ms-parent/pom.xml</relativePath>
+        <relativePath>../../../parent-pom/gw-parent/pom.xml</relativePath>
     </parent>
 
     <artifactId>auth-gateway</artifactId>

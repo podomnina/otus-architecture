@@ -8,8 +8,8 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "jwt")
 public class JwtConfigProps {
-    private String secret; //todo
+    private String secret;
     private String refreshSecret;
-    private Long expirationInMs; //todo default value?
+    private Long expirationInMs;
     private Long refreshExpirationInMs;
 }

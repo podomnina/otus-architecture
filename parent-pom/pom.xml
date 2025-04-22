@@ -26,6 +26,7 @@
         <flyway.version>9.16.3</flyway.version>
         <springdoc.openapi.webmvc.version>2.8.5</springdoc.openapi.webmvc.version>
         <spring.cloud.version>2024.0.1</spring.cloud.version>
+        <spring.statemachine.version>3.2.0</spring.statemachine.version>
     </properties>
 
     <dependencyManagement>
@@ -88,12 +89,6 @@
                 <version>${postgresql.version}</version>
             </dependency>
 
-
-            <dependency>
-                <groupId>ru.otus</groupId>
-                <artifactId>auth-service-db</artifactId>
-                <version>${project.version}</version>
-            </dependency>
             <dependency>
                 <groupId>ru.otus</groupId>
                 <artifactId>auth-shared</artifactId>
@@ -103,6 +98,109 @@
                 <groupId>ru.otus</groupId>
                 <artifactId>common</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>lib-exception</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>auth-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>inventory-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>menu-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>order-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>payment-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>inventory-service-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>inventory-service-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>menu-service-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>menu-service-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>notification-service-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>notification-service-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>payment-service-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>payment-service-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>lib-redis</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>lib-kafka</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>lib-ctx</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.statemachine</groupId>
+                <artifactId>spring-statemachine-starter</artifactId>
+                <version>${spring.statemachine.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.statemachine</groupId>
+                <artifactId>spring-statemachine-data-redis</artifactId>
+                <version>${spring.statemachine.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
