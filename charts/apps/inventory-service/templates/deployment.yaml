@@ -14,56 +14,47 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: {{ .Values.auth_service.image }}
+          image: {{ .Values.inventory_service.image }}
           env:
             - name: SERVER_PORT
               value: {{ .Values.service.port | quote }}
             - name: SPRING_DATASOURCE_URL
-              value: {{ .Values.auth_service.config.db.url | quote }}
+              value: {{ .Values.inventory_service.config.db.url | quote }}
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth_service.config.db.secretName }}
+                  name: {{ .Values.inventory_service.config.db.secretName }}
                   key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth_service.config.db.secretName }}
+                  name: {{ .Values.inventory_service.config.db.secretName }}
                   key: password
 
             - name: SPRING_FLYWAY_URL
-              value: {{ .Values.auth_service.config.db.url | quote }}
+              value: {{ .Values.inventory_service.config.db.url | quote }}
             - name: SPRING_FLYWAY_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth_service.config.db.secretName }}
+                  name: {{ .Values.inventory_service.config.db.secretName }}
                   key: username
             - name: SPRING_FLYWAY_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth_service.config.db.secretName }}
+                  name: {{ .Values.inventory_service.config.db.secretName }}
                   key: password
 
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.auth_service.config.jwt.secretName }}
-                  key: secret
+            - name: SPRING_DATA_REDIS_HOST
+              value: {{ .Values.inventory_service.config.redis.host | quote }}
 
-            - name: JWT_EXPIRATIONINMS
-              value: {{ .Values.auth_service.config.jwt.expirationInMs | quote }}
+            - name: SPRING_DATA_REDIS_PORT
+              value: {{ .Values.inventory_service.config.redis.port | quote }}
 
-            - name: JWT_REFRESH_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.auth_service.config.jwt.refreshSecretName }}
-                  key: secret
-
-            - name: JWT_REFRESHEXPIRATIONINMS
-              value: {{ .Values.auth_service.config.jwt.refreshExpirationInMs | quote }}
+            - name: SPRING_DATA_REDIS_PASSWORD
+              value: {{ .Values.inventory_service.config.redis.password | quote }}
 
             - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
-              value: {{ .Values.auth_service.config.kafka.bootstrapServers | quote }}
+              value: {{ .Values.inventory_service.config.kafka.bootstrapServers | quote }}
 
           ports:
             - name: http

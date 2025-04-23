@@ -102,3 +102,87 @@ helm upgrade -i nginx ingress-nginx/ingress-nginx --namespace otus -f ./charts/i
 ```
 ### Запустить postman коллекцию
 `newman run ./postman/OTUS.postman_collection.json --folder "19. Backend for frontends"`
+
+
+
+## ПРОЕКТНАЯ РАБОТА
+### Собрать проект
+`mvn package`
+### Собрать и запушить docker образы приложений
+```
+docker image build --platform linux/amd64 -t podomnina/auth-gateway:8 ./ms/auth-gateway/auth-gateway
+docker push podomnina/auth-gateway:8
+
+docker image build --platform linux/amd64 -t podomnina/auth-service:8 ./ms/auth-service/auth-service
+docker push podomnina/auth-service:8
+
+docker image build --platform linux/amd64 -t podomnina/inventory-service:8 ./ms/inventory-service/inventory-service
+docker push podomnina/inventory-service:8
+
+docker image build --platform linux/amd64 -t podomnina/menu-service:8 ./ms/menu-service/menu-service
+docker push podomnina/menu-service:8
+
+docker image build --platform linux/amd64 -t podomnina/notification-service:8 ./ms/notification-service/notification-service
+docker push podomnina/notification-service:8
+
+docker image build --platform linux/amd64 -t podomnina/order-service:8 ./ms/order-service/order-service
+docker push podomnina/order-service:8
+
+docker image build --platform linux/amd64 -t podomnina/payment-service:8 ./ms/payment-service/payment-service
+docker push podomnina/payment-service:8
+```
+### Установить постгрес
+```
+
+```
+### Установить Kafka
+```
+kubectl create namespace kafka
+helm repo add strimzi https://strimzi.io/charts/
+helm install strimzi-kafka strimzi/strimzi-kafka-operator -n kafka
+kubectl apply -f ./charts/components/kafka/kafka.yaml
+
+kubectl apply -n kafka -f - <<EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-metrics
+data:
+  kafka-metrics-config.yml: |
+    lowercaseOutputName: true
+    rules:
+    - pattern: kafka.server<type=(.+), name=(.+)PerSec\\w*><>Count
+      name: kafka_server_$$1_$$2_total
+      type: COUNTER
+    - pattern: kafka.server<type=(.+), name=(.+)PerSec\\w*><>MeanRate
+      name: kafka_server_$$1_$$2_rate
+      type: GAUGE
+EOF
+```
+### Установить Redis
+```
+kubectl apply -f ./charts/components/redis -n redis
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+### Установить приложения
+```
+helm upgrade -i auth-gateway ./charts/apps/auth-gateway --namespace otus --atomic -f ./charts/apps/auth-gateway/values.yaml
+helm upgrade -i auth-service ./charts/apps/auth-service --namespace otus --atomic -f ./charts/apps/auth-service/values.yaml
+helm upgrade -i inventory-service ./charts/apps/inventory-service --namespace otus --atomic -f ./charts/apps/inventory-service/values.yaml
+helm upgrade -i menu-service ./charts/apps/menu-service --namespace otus --atomic -f ./charts/apps/menu-service/values.yaml
+helm upgrade -i notification-service ./charts/apps/notification-service --namespace otus --atomic -f ./charts/apps/notification-service/values.yaml
+helm upgrade -i order-service ./charts/apps/order-service --namespace otus --atomic -f ./charts/apps/order-service/values.yaml
+helm upgrade -i payment-service ./charts/apps/payment-service --namespace otus --atomic -f ./charts/apps/payment-service/values.yaml
+```

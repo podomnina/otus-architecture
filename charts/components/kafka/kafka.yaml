@@ -1,0 +1,39 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: otus-kafka
+  namespace: kafka
+spec:
+  kafka:
+    version: 3.8.0
+    replicas: 1  # Для теста (в prod ставим 3+)
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+    storage:
+      type: persistent-claim
+      size: 10Gi  # Размер диска
+      deleteClaim: false
+    metricsConfig:  # Включение метрик Prometheus
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: kafka-metrics
+          key: kafka-metrics-config.yml
+    config:
+      auto.create.topics.enable: true  # Топики создаём через KafkaTopic CRD
+  zookeeper:
+    replicas: 1  # Для теста (в prod 3+)
+    storage:
+      type: persistent-claim
+      size: 5Gi
+      deleteClaim: false
+  entityOperator:
+    topicOperator: {}  # Включаем управление топиками через CRD
+    userOperator: {}

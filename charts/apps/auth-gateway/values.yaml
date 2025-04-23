@@ -4,7 +4,7 @@ service:
 replicaCount: 1
 
 auth_gateway:
-  image: podomnina/auth-gateway:7
+  image: podomnina/auth-gateway:8
   config:
     jwt:
       secretName: auth-jwt-secret

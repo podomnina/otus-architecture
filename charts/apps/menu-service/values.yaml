@@ -1,0 +1,21 @@
+service:
+  port: 8080
+
+replicaCount: 1
+
+menu_service:
+  image: podomnina/menu-service:8
+  config:
+    db:
+      url: jdbc:postgresql://otus-postgres-postgres:5432/menu
+      secretName: menu-service-pg-secret
+      username: otus_user
+      password: NVB1c6hB6vF7
+
+resources:
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1024Mi"

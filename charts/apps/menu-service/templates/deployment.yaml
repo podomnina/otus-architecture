@@ -14,56 +14,35 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}
-          image: {{ .Values.auth_service.image }}
+          image: {{ .Values.menu_service.image }}
           env:
             - name: SERVER_PORT
               value: {{ .Values.service.port | quote }}
             - name: SPRING_DATASOURCE_URL
-              value: {{ .Values.auth_service.config.db.url | quote }}
+              value: {{ .Values.menu_service.config.db.url | quote }}
             - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth_service.config.db.secretName }}
+                  name: {{ .Values.menu_service.config.db.secretName }}
                   key: username
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth_service.config.db.secretName }}
+                  name: {{ .Values.menu_service.config.db.secretName }}
                   key: password
 
             - name: SPRING_FLYWAY_URL
-              value: {{ .Values.auth_service.config.db.url | quote }}
+              value: {{ .Values.menu_service.config.db.url | quote }}
             - name: SPRING_FLYWAY_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth_service.config.db.secretName }}
+                  name: {{ .Values.menu_service.config.db.secretName }}
                   key: username
             - name: SPRING_FLYWAY_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth_service.config.db.secretName }}
+                  name: {{ .Values.menu_service.config.db.secretName }}
                   key: password
-
-            - name: JWT_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.auth_service.config.jwt.secretName }}
-                  key: secret
-
-            - name: JWT_EXPIRATIONINMS
-              value: {{ .Values.auth_service.config.jwt.expirationInMs | quote }}
-
-            - name: JWT_REFRESH_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.auth_service.config.jwt.refreshSecretName }}
-                  key: secret
-
-            - name: JWT_REFRESHEXPIRATIONINMS
-              value: {{ .Values.auth_service.config.jwt.refreshExpirationInMs | quote }}
-
-            - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
-              value: {{ .Values.auth_service.config.kafka.bootstrapServers | quote }}
 
           ports:
             - name: http

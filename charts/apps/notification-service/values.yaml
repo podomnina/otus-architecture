@@ -1,0 +1,24 @@
+service:
+  port: 8080
+
+replicaCount: 1
+
+notification_service:
+  image: podomnina/notification-service:8
+  config:
+    kafka:
+      bootstrapServers: otus-kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
+    mail:
+      host: smtp.rambler.ru
+      port: 465
+      protocol: smtp
+      secretName: notification-service-email-secret
+      username: editManually
+      password: editManually
+resources:
+  requests:
+    cpu: "500m"
+    memory: "512Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1024Mi"

@@ -3,21 +3,23 @@ service:
 
 replicaCount: 1
 
-auth_service:
-  image: podomnina/auth-service:8
+order_service:
+  image: podomnina/order-service:8
   config:
     db:
-      url: jdbc:postgresql://otus-postgres-postgres:5432/auth
-      secretName: auth-service-pg-secret
+      url: jdbc:postgresql://otus-postgres-postgres:5432/order
+      secretName: order-service-pg-secret
       username: otus_user
       password: NVB1c6hB6vF7
-    jwt:
-      secretName: auth-jwt-secret
-      expirationInMs: 600000
-      refreshSecretName: auth-jwt-secret
-      refreshExpirationInMs: -1
+    cart:
+      ttl: 60 # todo
+    redis:
+      host: redis.redis.svc.cluster.local
+      port: 6379
+      password: password #todo
     kafka:
       bootstrapServers: otus-kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
+
 resources:
   requests:
     cpu: "500m"

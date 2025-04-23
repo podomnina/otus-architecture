@@ -20,5 +20,15 @@ data:
               uri: http://auth-service:8080
               predicates:
                 - Path=/api/v1/user/**
-              #filters:
-              #  - RewritePath=(/?.*)/api/user, /api/v1/user
+            - id: menu-service
+              uri: http://menu-service:8080
+              predicates:
+                - Path=/api/v1/menu/**
+            - id: order-service
+              uri: http://order-service:8080
+              predicates:
+                - Path=/api/v1/order/**
+            - id: payment-service
+              uri: http://payment-service:8080
+              predicates:
+                - Path=/api/v1/account/**
