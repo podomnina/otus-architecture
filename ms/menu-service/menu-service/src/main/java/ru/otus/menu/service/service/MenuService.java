@@ -51,7 +51,7 @@ public class MenuService {
         var dishOpt = repository.findById(dishId);
         if (dishOpt.isEmpty()) {
             log.error("Dish with id {} not found", dishId);
-            throw new NoSuchElementException("Dish with id " + dishId + " not found");
+            throw new NoSuchElementException("Блюдо " + dishId + " не найдено");
         }
 
         var map = Map.of(dishId, quantity);

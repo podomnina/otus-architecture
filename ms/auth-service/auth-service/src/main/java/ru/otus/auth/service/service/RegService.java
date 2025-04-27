@@ -40,7 +40,7 @@ public class RegService {
         var existingIdentifier = identifierRepository.findByLogin(email);
         if (existingIdentifier != null) {
             log.error("User with email {} already exists", email);
-            throw new EntityExistsException("User with email '" + email + "' already exists");
+            throw new EntityExistsException("Пользователь с таким email '" + email + "' уже существует");
         }
 
         var user = mapper.toUser(dto);

@@ -41,7 +41,7 @@ public class Order {
     public void changeStatus(OrderStatus newStatus) {
         if (!status.canTransitionTo(newStatus)) {
             throw new IllegalStateException(
-                    String.format("Cannot change status from %s to %s", status, newStatus));
+                    String.format("Невозможно совершить переход статуса с %s на %s", status, newStatus));
         }
         this.status = newStatus;
     }

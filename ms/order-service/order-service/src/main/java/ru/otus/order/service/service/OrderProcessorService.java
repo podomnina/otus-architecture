@@ -57,7 +57,7 @@ public class OrderProcessorService {
         } else if (OrderStatus.DELIVERED == status) {
             orderStateMachineService.sendToDeliveredAction(order);
         } else {
-            throw new BusinessAppException("order.status.transition.invalid", "Invalid status transition");
+            throw new BusinessAppException("order.status.transition.invalid", "Неверный статус");
         }
         return order;
     }

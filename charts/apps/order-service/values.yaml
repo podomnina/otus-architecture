@@ -4,7 +4,7 @@ service:
 replicaCount: 1
 
 order_service:
-  image: podomnina/order-service:8
+  image: podomnina/order-service:9
   config:
     db:
       url: jdbc:postgresql://otus-postgres-postgres:5432/order
@@ -14,16 +14,16 @@ order_service:
     cart:
       ttl: 60 # todo
     redis:
-      host: redis.redis.svc.cluster.local
+      host: redis
       port: 6379
       password: password #todo
     kafka:
-      bootstrapServers: otus-kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
+      bootstrapServers: my-kafka.otus.svc.cluster.local:9092
 
 resources:
   requests:
-    cpu: "500m"
-    memory: "512Mi"
+    cpu: "100m"
+    memory: "256Mi"
   limits:
     cpu: "1000m"
     memory: "1024Mi"

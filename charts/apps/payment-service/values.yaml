@@ -4,7 +4,7 @@ service:
 replicaCount: 1
 
 payment_service:
-  image: podomnina/payment-service:8
+  image: podomnina/payment-service:9
   config:
     db:
       url: jdbc:postgresql://otus-postgres-postgres:5432/payment
@@ -12,12 +12,12 @@ payment_service:
       username: otus_user
       password: NVB1c6hB6vF7
     kafka:
-      bootstrapServers: otus-kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
+      bootstrapServers: my-kafka.otus.svc.cluster.local:9092
 
 resources:
   requests:
-    cpu: "500m"
-    memory: "512Mi"
+    cpu: "100m"
+    memory: "256Mi"
   limits:
     cpu: "1000m"
     memory: "1024Mi"

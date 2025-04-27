@@ -35,7 +35,7 @@ public class AccountService {
         var account = repository.findById(userId);
         if (account.isEmpty()) {
             log.error("Account for the user with id {} not found", userId);
-            throw new BusinessAppException("account.not.found", "Account not found");
+            throw new BusinessAppException("account.not.found", "Счет не найден");
         }
 
         return mapper.map(account.get());
@@ -46,7 +46,7 @@ public class AccountService {
         var accountOpt = repository.findById(userId);
         if (accountOpt.isEmpty()) {
             log.error("Account for the user with id {} not found", userId);
-            throw new BusinessAppException("account.not.found", "Account not found");
+            throw new BusinessAppException("account.not.found", "Счет не найден");
         }
 
         var account = accountOpt.get();

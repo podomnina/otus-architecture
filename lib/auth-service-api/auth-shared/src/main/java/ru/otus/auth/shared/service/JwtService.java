@@ -69,19 +69,19 @@ public class JwtService {
             return Pair.of(true, "");
         } catch (SignatureException | MalformedJwtException ex) {
             log.error("Invalid JWT signature");
-            return Pair.of(false, "Invalid JWT signature");
+            return Pair.of(false, "Недействительная подпись JWT токена");
         } catch (ExpiredJwtException ex) {
             log.debug("Expired JWT token");
-            return Pair.of(false, "Expired JWT token");
+            return Pair.of(false, "Истек срок действия JWT токена");
         } catch (UnsupportedJwtException ex) {
             log.error("Unsupported JWT token");
-            return Pair.of(false, "Unsupported JWT token");
+            return Pair.of(false, "Неподдерживаемый JWT token");
         } catch (IllegalArgumentException ex) {
             log.error("JWT claims string is empty.");
-            return Pair.of(false, "JWT claims string is empty");
+            return Pair.of(false, "JWT claims не указаны");
         } catch (Exception e) {
             log.error("error get user from token", e);
-            return Pair.of(false, "Error while processing JWT token");
+            return Pair.of(false, "Ошибка во время обработки JWT токена");
         }
     }
 

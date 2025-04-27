@@ -4,21 +4,21 @@ service:
 replicaCount: 1
 
 notification_service:
-  image: podomnina/notification-service:8
+  image: podomnina/notification-service:9
   config:
     kafka:
-      bootstrapServers: otus-kafka-kafka-bootstrap.kafka.svc.cluster.local:9092
+      bootstrapServers: my-kafka.otus.svc.cluster.local:9092
     mail:
       host: smtp.rambler.ru
       port: 465
       protocol: smtp
       secretName: notification-service-email-secret
-      username: editManually
-      password: editManually
+      username: podomninatest@rambler.ru
+      password: Bakamitai17
 resources:
   requests:
-    cpu: "500m"
-    memory: "512Mi"
+    cpu: "100m"
+    memory: "256Mi"
   limits:
     cpu: "1000m"
     memory: "1024Mi"

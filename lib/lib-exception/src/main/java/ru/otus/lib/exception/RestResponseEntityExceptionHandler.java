@@ -46,7 +46,7 @@ public class RestResponseEntityExceptionHandler
         log.error("Access Denied exception occurred: ", ex);
         var errorDto = ErrorDto.builder()
                 .code(UNAUTHORIZED)
-                .message("Access denied")
+                .message("Доступ запрещен")
                 .build();
         return new ResponseEntity<ErrorDto>(errorDto, new HttpHeaders(), HttpStatus.FORBIDDEN);
     }
@@ -118,7 +118,7 @@ public class RestResponseEntityExceptionHandler
 
         var errorDto = ErrorDto.builder()
                 .code("bad.request")
-                .message("Invalid arguments")
+                .message("Неверно введенные данные")
                 .details(errors)
                 .build();
 

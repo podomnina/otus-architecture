@@ -67,7 +67,7 @@ public class OrderService {
 
         if (dish == null || Boolean.FALSE == dish.getIsAvailable()) {
             log.error("Current item with id {} is unavailable", newDishId);
-            throw new BusinessAppException("dish.is.unavailable", "Current item is unavailable for the order");
+            throw new BusinessAppException("dish.is.unavailable", "Выбранное блюдо недоступно для заказа");
         }
 
         var newDish = new Cart.Item();
@@ -103,9 +103,14 @@ public class OrderService {
         var cartOpt = cartRepository.findById(userId);
         if (cartOpt.isEmpty()) {
             log.error("Cart for the user with id {} not found", userId);
-            throw new BusinessAppException("cart.not.found", "Cart not found");
+            throw new BusinessAppException("cart.not.found", "Корзина не найдена");
+        }
+        if (CollectionUtils.isEmpty(cartOpt.get().getItems())) {
+            log.error("Cart items list is empty for user with id: {}. Unable to submit", userId);
+            throw new BusinessAppException("cart.items.list.is.empty", "Попытка оформить заказ с пустой корзиной");
         }
 
+//todo cart items is empty??? можно засабмитить пустую корзину
         var order = orderMapper.map(cartOpt.get());
         order.setEmail(userCtx.getLogin());
         var createdOrder = orderProcessorService.createOrder(order, userCtx);
@@ -119,13 +124,13 @@ public class OrderService {
         var orderOpt = orderRepository.findById(orderId);
         if (orderOpt.isEmpty()) {
             log.error("Order with id {} not found", orderId);
-            throw new BusinessAppException("order.not.found", "Order not found");
+            throw new BusinessAppException("order.not.found", "Заказ не найден");
         }
 
         var order = orderOpt.get();
         if (userCtx.getRoles().contains(Roles.CLIENT) && !Objects.equals(order.getUserId(), userCtx.getId())) {
             log.error("User with id {} trying to get not own order with id {}", userCtx.getId(), orderId);
-            throw new BusinessAppException("order.not.found", "Order not found");
+            throw new BusinessAppException("order.not.found", "Заказ не найден");
         }
 
         return orderMapper.map(order);

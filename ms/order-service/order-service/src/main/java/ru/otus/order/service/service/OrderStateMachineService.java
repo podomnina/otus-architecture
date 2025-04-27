@@ -98,6 +98,6 @@ public class OrderStateMachineService {
             return SendNotificationModel.orderCancelledByPayment(orderId, email);
         }
 
-        throw new BusinessAppException("order.error.unknown.event", "Unknown event");
+        throw new BusinessAppException("order.error.unknown.event", "Неизвестное событие");
     }
 }

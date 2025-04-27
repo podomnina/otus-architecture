@@ -4,7 +4,7 @@ service:
 replicaCount: 1
 
 menu_service:
-  image: podomnina/menu-service:8
+  image: podomnina/menu-service:9
   config:
     db:
       url: jdbc:postgresql://otus-postgres-postgres:5432/menu
@@ -14,8 +14,8 @@ menu_service:
 
 resources:
   requests:
-    cpu: "500m"
-    memory: "512Mi"
+    cpu: "100m"
+    memory: "256Mi"
   limits:
     cpu: "1000m"
     memory: "1024Mi"

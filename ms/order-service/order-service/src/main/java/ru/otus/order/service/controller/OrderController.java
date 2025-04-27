@@ -63,12 +63,12 @@ public class OrderController {
         log.debug("Trying to change status for order with id {} by user: {} to status: {}", id, userCtx, status);
         if (userCtx.getRoles().contains(Roles.CLIENT)) { //todo
             log.error("You are not allowed to change status");
-            throw new BusinessAppException("order.status.transition.not.allowed", "Change status is not allowed", "403"); //todo check
+            throw new BusinessAppException("order.status.transition.not.allowed", "Изменение статуса заказа недоступно", "403"); //todo check
         }
 
         if (!OrderStatus.isValidForManualTransition(status)) {
             log.error("Manual transition for {} status is unavailable", status);
-            throw new BusinessAppException("order.status.transition.invalid", "Invalid status transition");
+            throw new BusinessAppException("order.status.transition.invalid", "Неверный статус перехода для заказа");
         }
 
         return service.setStatus(id, status);

@@ -33,7 +33,7 @@ public class NotificationController implements NotificationServiceClient {
             return "ok";
 
         } catch (Exception e) {
-            throw new BusinessAppException("email.sending.error", "Unable to send the email");
+            throw new BusinessAppException("email.sending.error", "Ошибка отправки email");
         }
     }
 }
