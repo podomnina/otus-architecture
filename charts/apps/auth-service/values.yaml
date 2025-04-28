@@ -4,10 +4,10 @@ service:
 replicaCount: 1
 
 auth_service:
-  image: podomnina/auth-service:10
+  image: podomnina/auth-service:11
   config:
     db:
-      url: jdbc:postgresql://otus-postgres-postgres:5432/auth
+      url: jdbc:postgresql://otus-postgres-postgres:5432/otus
       secretName: auth-service-pg-secret
       username: otus_user
       password: NVB1c6hB6vF7

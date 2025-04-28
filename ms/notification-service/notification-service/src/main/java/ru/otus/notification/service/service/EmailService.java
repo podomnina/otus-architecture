@@ -1,43 +1,45 @@
 package ru.otus.notification.service.service;
 
-import jakarta.mail.MessagingException;
-import jakarta.mail.internet.MimeMessage;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
-import org.springframework.scheduling.annotation.Async;
+
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.Context;
+
 import ru.otus.lib.kafka.model.SendNotificationModel;
+import ru.otus.notification.service.model.Notification;
+import ru.otus.notification.service.model.NotificationListDto;
+import ru.otus.notification.service.repository.NotificationRepository;
+
+import java.time.OffsetDateTime;
+import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class EmailService {
 
-    private final JavaMailSender mailSender;
-    private final TemplateEngine templateEngine;
-
-    public EmailService(JavaMailSender mailSender, TemplateEngine templateEngine) {
-        this.mailSender = mailSender;
-        this.templateEngine = templateEngine;
-    }
-
-    //@Async
-    public void sendSimpleEmail(String to, String subject, String text) {
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
-        mailSender.send(message);
-    }
+    //private final JavaMailSender mailSender;
+    //private final TemplateEngine templateEngine;
+    private final NotificationRepository repository;
 
     public void send(SendNotificationModel model) {
-        sendSimpleEmail(model.getEmail(), model.getSubject(), model.getMessage());
+        var notification = Notification.builder()
+                .sendTo(model.getEmail())
+                .subject(model.getSubject())
+                .message(model.getMessage())
+                .createdAt(OffsetDateTime.now())
+                .build();
+        repository.save(notification);
+        //sendSimpleEmail(model.getEmail(), model.getSubject(), model.getMessage());
     }
 
+    public NotificationListDto getList(String login) {
+        var list = repository.findAllBySendToOrderByCreatedAt(login);
+        var items = list.stream()
+                .map(i -> new NotificationListDto.Item(i.getId(), i.getSendTo(), i.getSubject(), i.getMessage()))
+                .collect(Collectors.toList());
+        return new NotificationListDto(items);
+    }
+/*
     @Async
     public void sendHtmlEmail(String to, String subject, String htmlContent) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
@@ -56,5 +58,5 @@ public class EmailService {
             throws MessagingException {
         String htmlContent = templateEngine.process(templateName, context);
         sendHtmlEmail(to, subject, htmlContent);
-    }
+    }*/
 }

@@ -30,7 +30,7 @@ public class OrderProcessorService {
         var createdOrder = orderRepository.save(order);
 
         var orderId = order.getId();
-
+/*
         var dishMap = createdOrder.getItems().stream()
                 .collect(Collectors.toMap(
                         i -> i.getId().getDishId(),
@@ -42,7 +42,13 @@ public class OrderProcessorService {
         kafkaProducerService.send(BusinessTopics.ORDER_RESERVATION_PROCESS, reservationModel);
 
         var notificationModel = SendNotificationModel.orderCreated(orderId, order.getEmail());
-        kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);
+        kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);*/
+
+        var userId = order.getUserId();
+        var amount = order.getTotalPrice();
+        var paymentModel = PaymentProcessModel.init(orderId, userId, amount);
+        kafkaProducerService.send(BusinessTopics.ORDER_PAYMENT_PROCESS, paymentModel);
+
         return createdOrder;
     }
 

@@ -39,10 +39,10 @@ public class Order {
     }
 
     public void changeStatus(OrderStatus newStatus) {
-        if (!status.canTransitionTo(newStatus)) {
-            throw new IllegalStateException(
-                    String.format("Невозможно совершить переход статуса с %s на %s", status, newStatus));
-        }
+        //if (!status.canTransitionTo(newStatus)) {
+        //    throw new IllegalStateException(
+        //            String.format("Невозможно совершить переход статуса с %s на %s", status, newStatus));
+        //}
         this.status = newStatus;
     }
 

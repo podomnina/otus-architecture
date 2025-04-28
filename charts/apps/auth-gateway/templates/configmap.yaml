@@ -32,3 +32,7 @@ data:
               uri: http://payment-service:8080
               predicates:
                 - Path=/api/v1/account/**
+            - id: notification-service
+              uri: http://notification-service:8080
+              predicates:
+                - Path=/api/internal/notification/**

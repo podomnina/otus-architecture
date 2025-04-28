@@ -60,6 +60,7 @@
 		<module>ms/payment-service/payment-service-db</module>
 		<module>ms/payment-service/payment-service</module>
 
+		<module>ms/notification-service/notification-service-db</module>
 		<module>ms/notification-service/notification-service</module>
 
 	</modules>

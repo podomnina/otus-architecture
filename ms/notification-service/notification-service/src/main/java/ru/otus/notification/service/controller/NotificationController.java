@@ -3,14 +3,14 @@ package ru.otus.notification.service.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.context.Context;
+import ru.otus.common.UserCtx;
 import ru.otus.common.error.BusinessAppException;
+import ru.otus.lib.ctx.UserContext;
 import ru.otus.notification.lib.api.EmailRequestDto;
 import ru.otus.notification.lib.api.NotificationServiceClient;
+import ru.otus.notification.service.model.NotificationListDto;
 import ru.otus.notification.service.service.EmailService;
 
 @Slf4j
@@ -29,11 +29,16 @@ public class NotificationController implements NotificationServiceClient {
             var context = new Context();
             context.setVariable("subject", dto.getIntro());
             context.setVariable("text", dto.getMessage());
-            service.sendEmailFromTemplate(dto.getTo(), dto.getSubject(), "email-template", context);
+            //service.sendEmailFromTemplate(dto.getTo(), dto.getSubject(), "email-template", context);
             return "ok";
 
         } catch (Exception e) {
             throw new BusinessAppException("email.sending.error", "Ошибка отправки email");
         }
+    }
+
+    @GetMapping
+    public NotificationListDto getNotifications(@UserContext UserCtx userCtx) {
+        return service.getList(userCtx.getLogin());
     }
 }

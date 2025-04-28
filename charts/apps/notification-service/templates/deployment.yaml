@@ -22,32 +22,31 @@ spec:
             - name: SPRING_KAFKA_BOOTSTRAP-SERVERS
               value: {{ .Values.notification_service.config.kafka.bootstrapServers | quote }}
 
-            - name: SPRING_MAIL_USERNAME
+            - name: SPRING_DATASOURCE_URL
+              value: {{ .Values.notification_service.config.db.url | quote }}
+            - name: SPRING_DATASOURCE_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.notification_service.config.mail.secretName }}
+                  name: {{ .Values.notification_service.config.db.secretName }}
                   key: username
-
-            - name: SPRING_MAIL_PASSWORD
+            - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.notification_service.config.mail.secretName }}
+                  name: {{ .Values.notification_service.config.db.secretName }}
                   key: password
 
-            - name: SPRING_MAIL_PROPERTIES_MAIL_SMTP_FROM
+            - name: SPRING_FLYWAY_URL
+              value: {{ .Values.notification_service.config.db.url | quote }}
+            - name: SPRING_FLYWAY_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.notification_service.config.mail.secretName }}
+                  name: {{ .Values.notification_service.config.db.secretName }}
                   key: username
-
-            - name: SPRING_MAIL_HOST
-              value: {{ .Values.notification_service.config.mail.host | quote }}
-
-            - name: SPRING_MAIL_PORT
-              value: {{ .Values.notification_service.config.mail.port | quote }}
-
-            - name: SPRING_MAIL_PROTOCOL
-              value: {{ .Values.notification_service.config.mail.protocol | quote }}
+            - name: SPRING_FLYWAY_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.notification_service.config.db.secretName }}
+                  key: password
 
           ports:
             - name: http

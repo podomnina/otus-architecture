@@ -130,6 +130,11 @@
                 <artifactId>payment-service-db</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>notification-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>ru.otus</groupId>

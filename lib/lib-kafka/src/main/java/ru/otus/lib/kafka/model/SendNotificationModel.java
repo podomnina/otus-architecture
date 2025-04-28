@@ -46,6 +46,11 @@ public class SendNotificationModel {
         return prepare(orderId, email, type);
     }
 
+    public static SendNotificationModel orderIsPaid(Integer orderId, String email) {
+        var type = NotificationType.ORDER_IS_PAID;
+        return prepare(orderId, email, type);
+    }
+
     private static SendNotificationModel prepare(Integer orderId, String email, NotificationType type) {
         var subject = type.getSubject();
         var message = type.getMessage().formatted(orderId);

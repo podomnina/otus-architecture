@@ -4,10 +4,10 @@ service:
 replicaCount: 1
 
 payment_service:
-  image: podomnina/payment-service:9
+  image: podomnina/payment-service:11
   config:
     db:
-      url: jdbc:postgresql://otus-postgres-postgres:5432/payment
+      url: jdbc:postgresql://otus-postgres-postgres:5432/otus
       secretName: payment-service-pg-secret
       username: otus_user
       password: NVB1c6hB6vF7

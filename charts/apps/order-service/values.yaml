@@ -4,10 +4,10 @@ service:
 replicaCount: 1
 
 order_service:
-  image: podomnina/order-service:9
+  image: podomnina/order-service:12
   config:
     db:
-      url: jdbc:postgresql://otus-postgres-postgres:5432/order
+      url: jdbc:postgresql://otus-postgres-postgres:5432/otus
       secretName: order-service-pg-secret
       username: otus_user
       password: NVB1c6hB6vF7

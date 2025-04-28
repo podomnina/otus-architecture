@@ -3,8 +3,8 @@ package ru.otus.order.service.model.entity;
 import jakarta.persistence.Column;
 import org.springframework.data.annotation.Id;
 import lombok.Data;
-import org.springframework.data.redis.core.RedisHash;
-import org.springframework.data.redis.core.TimeToLive;
+//import org.springframework.data.redis.core.RedisHash;
+//import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Data
-@RedisHash(value = "OrderCart")
+//@RedisHash(value = "OrderCart")
 public class Cart implements Serializable {
     @Id
     private UUID userId;
@@ -21,7 +21,7 @@ public class Cart implements Serializable {
 
     private Map<Integer, Item> items = new HashMap<>();
 
-    @TimeToLive(unit = TimeUnit.MINUTES) // todo to config
+    //@TimeToLive(unit = TimeUnit.MINUTES) // todo to config
     private Long expirationTime = 60L; // 60 минут
 
     @Data

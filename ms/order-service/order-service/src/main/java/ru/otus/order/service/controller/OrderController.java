@@ -8,7 +8,6 @@ import ru.otus.common.error.BusinessAppException;
 import ru.otus.common.Roles;
 import ru.otus.common.UserCtx;
 import ru.otus.lib.ctx.UserContext;
-import ru.otus.order.service.model.OrderEvent;
 import ru.otus.order.service.model.OrderStatus;
 import ru.otus.order.service.model.dto.AddItemRequestDto;
 import ru.otus.order.service.model.dto.CartResponseDto;
@@ -38,6 +37,13 @@ public class OrderController {
         var userId = userCtx.getId();
         log.debug("Trying to get cart by user with id: {}", userId);
         return service.getCart(userId);
+    }
+
+    @PostMapping
+    public OrderResponseDto createOrder(@UserContext UserCtx userCtx, @RequestBody AddItemRequestDto dto) {
+        var userId = userCtx.getId();
+        log.debug("Trying to add item to order {} by user with id: {}", dto, userId);
+        return service.createOrder(dto, userCtx);
     }
 
     @PostMapping("/cart/submit")

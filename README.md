@@ -103,6 +103,66 @@ helm upgrade -i nginx ingress-nginx/ingress-nginx --namespace otus -f ./charts/i
 ### Запустить postman коллекцию
 `newman run ./postman/OTUS.postman_collection.json --folder "19. Backend for frontends"`
 
+## 7. Stream processing
+### Собрать проект
+`mvn package`
+### Собрать и запушить docker образы приложений
+```
+docker image build --platform linux/amd64 -t podomnina/auth-service:11 .
+docker image build --platform linux/amd64 -t podomnina/auth-gateway:11 .
+docker image build --platform linux/amd64 -t podomnina/notification-service:11 .
+docker image build --platform linux/amd64 -t podomnina/order-service:11 .
+docker image build --platform linux/amd64 -t podomnina/payment-service:11 .
+
+docker push podomnina/auth-service:11
+docker push podomnina/auth-gateway:11
+docker push podomnina/notification-service:11
+docker push podomnina/order-service:11
+docker push podomnina/payment-service:11
+```
+### Создать namespace
+`kubectl create namespace otus`
+### Установить ingress
+```
+helm install nginx ingress-nginx/ingress-nginx --namespace otus -f nginx-ingress.yaml
+kubectl apply -f ./charts/ingress/ingress.yaml
+helm upgrade --install nginx ingress-nginx/ingress-nginx --namespace otus -f ./charts/ingress/values.yaml
+```
+### Установить постгрес
+```
+helm install otus-postgres ./charts/components/postgres --namespace otus -f ./charts/components/postgres/values.yaml
+```
+### Установить Kafka
+```
+helm upgrade -i my-kafka oci://registry-1.docker.io/bitnamicharts/kafka -n otus --set service.port=9092 --set auth.enabled=false --set auth.clientProtocol=plaintext --set kafka.autoCreateTopicsEnable=true --set listeners.client.protocol=plaintext
+```
+### Установить приложения
+```
+helm upgrade -i auth-gateway ./charts/apps/auth-gateway --namespace otus --atomic -f ./charts/apps/auth-gateway/values.yaml
+helm upgrade -i auth-service ./charts/apps/auth-service --namespace otus --atomic -f ./charts/apps/auth-service/values.yaml
+helm upgrade -i notification-service ./charts/apps/notification-service --namespace otus --atomic -f ./charts/apps/notification-service/values.yaml
+helm upgrade -i order-service ./charts/apps/order-service --namespace otus --atomic -f ./charts/apps/order-service/values.yaml
+helm upgrade -i payment-service ./charts/apps/payment-service --namespace otus --atomic -f ./charts/apps/payment-service/values.yaml
+```
+
+### Запустить postman коллекцию
+`newman run ./postman/OTUS.postman_collection.json --folder "24. RESTful" --verbose`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## ПРОЕКТНАЯ РАБОТА

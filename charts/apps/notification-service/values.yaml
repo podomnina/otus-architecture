@@ -4,17 +4,22 @@ service:
 replicaCount: 1
 
 notification_service:
-  image: podomnina/notification-service:9
+  image: podomnina/notification-service:11
   config:
     kafka:
       bootstrapServers: my-kafka.otus.svc.cluster.local:9092
-    mail:
-      host: smtp.rambler.ru
-      port: 465
-      protocol: smtp
-      secretName: notification-service-email-secret
-      username: podomninatest@rambler.ru
-      password: Bakamitai17
+    #mail:
+    #  host: smtp.rambler.ru
+    #  port: 465
+    #  protocol: smtp
+    #  secretName: notification-service-email-secret
+    #  username:
+    #  password:
+    db:
+      url: jdbc:postgresql://otus-postgres-postgres:5432/otus
+      secretName: notification-service-pg-secret
+      username: otus_user
+      password: NVB1c6hB6vF7
 resources:
   requests:
     cpu: "100m"

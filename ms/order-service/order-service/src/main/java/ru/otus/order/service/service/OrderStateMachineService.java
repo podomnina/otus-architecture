@@ -27,7 +27,7 @@ public class OrderStateMachineService {
 
     private final OrderRepository orderRepository;
     private final KafkaProducerService kafkaProducerService;
-    private final CartRepository cartRepository;
+    //private final CartRepository cartRepository;
     private final CartMapper cartMapper;
     private final MenuServiceClient menuServiceClient;
 
@@ -48,13 +48,13 @@ public class OrderStateMachineService {
     public void startCookingAction(Order order) {
         var orderId = order.getId();
         log.debug("Preparing order with id: {} for the cooking action", order.getId());
-        order.changeStatus(OrderStatus.COOKING);
+        order.changeStatus(OrderStatus.PAID);
         orderRepository.save(order);
 
-        var releaseModel = ReleaseIngredientsModel.initCooking(orderId);
-        kafkaProducerService.send(BusinessTopics.ORDER_RELEASE_INGREDIENTS, releaseModel);
+        //var releaseModel = ReleaseIngredientsModel.initCooking(orderId);
+        //kafkaProducerService.send(BusinessTopics.ORDER_RELEASE_INGREDIENTS, releaseModel);
 
-        var notificationModel = SendNotificationModel.orderIsCooking(order.getId(), order.getEmail());
+        var notificationModel = SendNotificationModel.orderIsPaid(order.getId(), order.getEmail());
         kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);
     }
 
@@ -79,13 +79,13 @@ public class OrderStateMachineService {
         order.changeStatus(OrderStatus.CANCELLED);
         orderRepository.save(order);
 
-        var dishIds = order.getItems().stream().map(i -> i.getId().getDishId()).collect(Collectors.toList());
-        var actualDishes = menuServiceClient.getByIds(dishIds);
-        var cart = cartMapper.map(order, actualDishes);
-        cartRepository.save(cart);
-
-        var releaseModel = ReleaseIngredientsModel.initRelease(orderId);
-        kafkaProducerService.send(BusinessTopics.ORDER_RELEASE_INGREDIENTS, releaseModel);
+        //var dishIds = order.getItems().stream().map(i -> i.getId().getDishId()).collect(Collectors.toList());
+        //var actualDishes = menuServiceClient.getByIds(dishIds);
+        //var cart = cartMapper.map(order, actualDishes);
+        //cartRepository.save(cart);
+//
+        //var releaseModel = ReleaseIngredientsModel.initRelease(orderId);
+        //kafkaProducerService.send(BusinessTopics.ORDER_RELEASE_INGREDIENTS, releaseModel);
 
         var notificationModel = prepareErrorNotification(orderId, order.getEmail(), event);
         kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);

@@ -12,16 +12,15 @@ import ru.otus.menu.lib.api.DishResponseDto;
 import ru.otus.menu.lib.api.MenuServiceClient;
 import ru.otus.order.service.mapper.CartMapper;
 import ru.otus.order.service.mapper.OrderMapper;
-import ru.otus.order.service.model.OrderEvent;
 import ru.otus.order.service.model.OrderStatus;
 import ru.otus.order.service.model.dto.AddItemRequestDto;
 import ru.otus.order.service.model.dto.CartResponseDto;
 import ru.otus.order.service.model.dto.OrderResponseDto;
 import ru.otus.order.service.model.entity.Cart;
+import ru.otus.order.service.model.entity.Order;
 import ru.otus.order.service.repository.CartRepository;
 import ru.otus.order.service.repository.OrderRepository;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 @Slf4j
@@ -30,7 +29,7 @@ import java.util.*;
 public class OrderService {
 
     private final MenuServiceClient menuServiceClient;
-    private final CartRepository cartRepository;
+    //private final CartRepository cartRepository;
     private final OrderRepository orderRepository;
     private final CartMapper cartMapper;
     private final OrderMapper orderMapper;
@@ -39,24 +38,24 @@ public class OrderService {
     @Transactional
     public CartResponseDto addItem(AddItemRequestDto dto, UUID userId) {
         Cart cart;
-        var cartOpt = cartRepository.findById(userId);
-        if (cartOpt.isPresent()) {
-            log.debug("Found existing cart for user with id: {}", userId);
-            cart = cartOpt.get();
-        } else {
-            log.debug("No cart for current user with id: {}. Creating it...", userId);
-            cart = Cart.newCart(userId);
-        }
+        //var cartOpt = cartRepository.findById(userId);
+        //if (cartOpt.isPresent()) {
+        //    log.debug("Found existing cart for user with id: {}", userId);
+        //    cart = cartOpt.get();
+        //} else {
+        //    log.debug("No cart for current user with id: {}. Creating it...", userId);
+        //    cart = Cart.newCart(userId);
+        //}
 
         var newDishId = dto.getDishId();
         var quantity = dto.getQuantity();
 
-        Optional<Cart.Item> existingDish = !CollectionUtils.isEmpty(cart.getItems()) ?
-                cart.getItems().values().stream().filter(d -> d != null && d.getDishId().equals(newDishId)).findFirst()
-                : Optional.empty();
-        if (existingDish.isPresent()) {
-            quantity = quantity + existingDish.get().getQuantity();
-        }
+        //Optional<Cart.Item> existingDish = !CollectionUtils.isEmpty(cart.getItems()) ?
+        //        cart.getItems().values().stream().filter(d -> d != null && d.getDishId().equals(newDishId)).findFirst()
+        //        : Optional.empty();
+        //if (existingDish.isPresent()) {
+        //    quantity = quantity + existingDish.get().getQuantity();
+        //}
 
         DishResponseDto dish = null;
         try {
@@ -77,46 +76,55 @@ public class OrderService {
         newDish.setQuantity(dto.getQuantity() != null ? dto.getQuantity() : 1);
         newDish.setIsAvailable(dish.getIsAvailable());
 
-        cart.addItem(newDish);
+        //cart.addItem(newDish);
 
-        cartRepository.save(cart);
-        return cartMapper.map(cart);
+        //cartRepository.save(cart);
+        return cartMapper.map(new Cart());
+    }
+
+    @Transactional
+    public OrderResponseDto createOrder(AddItemRequestDto dto, UserCtx userCtx) {
+        var order = orderMapper.mapMock(dto, userCtx);
+        var createdOrder = orderProcessorService.createOrder(order, userCtx);
+
+        return orderMapper.map(createdOrder);
     }
 
     @Transactional
     public CartResponseDto getCart(UUID userId) {
-        var cartOpt = cartRepository.findById(userId);
-        if (cartOpt.isPresent()) {
-            log.debug("Found existing cart for user with id: {}", userId);
-            return cartMapper.map(cartOpt.get());
-        } else {
-            log.debug("No cart for current user with id: {}. Creating it...", userId);
-            var cart = Cart.newCart(userId);
-            cartRepository.save(cart);
-            return cartMapper.map(cart);
-        }
+        //var cartOpt = cartRepository.findById(userId);
+        //if (cartOpt.isPresent()) {
+        //    log.debug("Found existing cart for user with id: {}", userId);
+        //    return cartMapper.map(cartOpt.get());
+        //} else {
+        //    log.debug("No cart for current user with id: {}. Creating it...", userId);
+        //    var cart = Cart.newCart(userId);
+        //    cartRepository.save(cart);
+        //    return cartMapper.map(cart);
+        //}
+        return null;
     }
 
     @Transactional
     public OrderResponseDto submit(Integer orderId, UserCtx userCtx) {
         var userId = userCtx.getId();
-        var cartOpt = cartRepository.findById(userId);
-        if (cartOpt.isEmpty()) {
-            log.error("Cart for the user with id {} not found", userId);
-            throw new BusinessAppException("cart.not.found", "Корзина не найдена");
-        }
-        if (CollectionUtils.isEmpty(cartOpt.get().getItems())) {
-            log.error("Cart items list is empty for user with id: {}. Unable to submit", userId);
-            throw new BusinessAppException("cart.items.list.is.empty", "Попытка оформить заказ с пустой корзиной");
-        }
+        //var cartOpt = cartRepository.findById(userId);
+        //if (cartOpt.isEmpty()) {
+        //    log.error("Cart for the user with id {} not found", userId);
+        //    throw new BusinessAppException("cart.not.found", "Корзина не найдена");
+        //}
+        //if (CollectionUtils.isEmpty(cartOpt.get().getItems())) {
+        //    log.error("Cart items list is empty for user with id: {}. Unable to submit", userId);
+        //    throw new BusinessAppException("cart.items.list.is.empty", "Попытка оформить заказ с пустой корзиной");
+        //}
 
 //todo cart items is empty??? можно засабмитить пустую корзину
-        var order = orderMapper.map(cartOpt.get());
-        order.setEmail(userCtx.getLogin());
-        var createdOrder = orderProcessorService.createOrder(order, userCtx);
-        cartRepository.deleteById(userId);
+        //var order = orderMapper.map(cartOpt.get());
+        //order.setEmail(userCtx.getLogin());
+        //var createdOrder = orderProcessorService.createOrder(order, userCtx);
+        //cartRepository.deleteById(userId);
 
-        return orderMapper.map(createdOrder);
+        return orderMapper.map(new Order());
     }
 
     @Transactional
