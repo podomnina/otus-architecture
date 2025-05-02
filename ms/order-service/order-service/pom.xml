@@ -32,6 +32,10 @@
         </dependency>
         <dependency>
             <groupId>ru.otus</groupId>
+            <artifactId>lib-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>ru.otus</groupId>
             <artifactId>lib-ctx</artifactId>
         </dependency>
     </dependencies>

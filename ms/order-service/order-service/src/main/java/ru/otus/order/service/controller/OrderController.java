@@ -2,6 +2,7 @@ package ru.otus.order.service.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.otus.common.error.BusinessAppException;
@@ -13,6 +14,8 @@ import ru.otus.order.service.model.dto.AddItemRequestDto;
 import ru.otus.order.service.model.dto.CartResponseDto;
 import ru.otus.order.service.model.dto.OrderResponseDto;
 import ru.otus.order.service.service.OrderService;
+
+import java.util.UUID;
 
 @Slf4j
 @Validated
@@ -40,10 +43,16 @@ public class OrderController {
     }
 
     @PostMapping
-    public OrderResponseDto createOrder(@UserContext UserCtx userCtx, @RequestBody AddItemRequestDto dto) {
+    public OrderResponseDto createOrder(
+            @UserContext UserCtx userCtx,
+            @RequestBody AddItemRequestDto dto,
+            @RequestHeader(name = "X-Idempotency-Key", required = false) String idempotencyKey) {
         var userId = userCtx.getId();
+        if (StringUtils.isEmpty(idempotencyKey)) {
+            idempotencyKey = UUID.randomUUID().toString();
+        }
         log.debug("Trying to add item to order {} by user with id: {}", dto, userId);
-        return service.createOrder(dto, userCtx);
+        return service.createOrder(dto, userCtx, idempotencyKey);
     }
 
     @PostMapping("/cart/submit")

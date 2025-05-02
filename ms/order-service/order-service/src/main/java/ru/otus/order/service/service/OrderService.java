@@ -17,8 +17,10 @@ import ru.otus.order.service.model.dto.AddItemRequestDto;
 import ru.otus.order.service.model.dto.CartResponseDto;
 import ru.otus.order.service.model.dto.OrderResponseDto;
 import ru.otus.order.service.model.entity.Cart;
+import ru.otus.order.service.model.entity.IdempotencyKey;
 import ru.otus.order.service.model.entity.Order;
 import ru.otus.order.service.repository.CartRepository;
+import ru.otus.order.service.repository.IdempotencyRepository;
 import ru.otus.order.service.repository.OrderRepository;
 
 import java.util.*;
@@ -34,6 +36,7 @@ public class OrderService {
     private final CartMapper cartMapper;
     private final OrderMapper orderMapper;
     private final OrderProcessorService orderProcessorService;
+    private final IdempotencyRepository idempotencyRepository;
 
     @Transactional
     public CartResponseDto addItem(AddItemRequestDto dto, UUID userId) {
@@ -83,9 +86,28 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderResponseDto createOrder(AddItemRequestDto dto, UserCtx userCtx) {
+    public OrderResponseDto createOrder(AddItemRequestDto dto, UserCtx userCtx, String idempotencyKey) {
+        var idempotencyRecord = idempotencyRepository.findById(idempotencyKey);
+        if (idempotencyRecord.isPresent()) {
+            var orderId = idempotencyRecord.get().getOrderId();
+            var orderOpt = orderRepository.findById(orderId);
+            if (orderOpt.isEmpty()) {
+                log.error("Order with id {} not found", orderId);
+                throw new BusinessAppException("order.not.found", "Заказ не найден");
+            }
+
+            var order = orderOpt.get();
+            return orderMapper.map(order);
+        }
+
         var order = orderMapper.mapMock(dto, userCtx);
         var createdOrder = orderProcessorService.createOrder(order, userCtx);
+        var orderId = createdOrder.getId();
+        var idempotencyRec = new IdempotencyKey();
+        idempotencyRec.setKey(idempotencyKey);
+        idempotencyRec.setOrderId(orderId);
+
+        idempotencyRepository.save(idempotencyRec);
 
         return orderMapper.map(createdOrder);
     }

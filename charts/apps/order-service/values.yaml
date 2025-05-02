@@ -4,7 +4,7 @@ service:
 replicaCount: 1
 
 order_service:
-  image: podomnina/order-service:12
+  image: podomnina/order-service:13
   config:
     db:
       url: jdbc:postgresql://otus-postgres-postgres:5432/otus
