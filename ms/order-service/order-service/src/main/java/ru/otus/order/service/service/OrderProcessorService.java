@@ -14,7 +14,6 @@ import ru.otus.order.service.model.OrderStatus;
 import ru.otus.order.service.model.entity.Order;
 import ru.otus.order.service.repository.OrderRepository;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,7 +29,7 @@ public class OrderProcessorService {
         var createdOrder = orderRepository.save(order);
 
         var orderId = order.getId();
-/*
+
         var dishMap = createdOrder.getItems().stream()
                 .collect(Collectors.toMap(
                         i -> i.getId().getDishId(),
@@ -41,13 +40,14 @@ public class OrderProcessorService {
         var reservationModel = ReservationProcessModel.initReserve(orderId, dishMap);
         kafkaProducerService.send(BusinessTopics.ORDER_RESERVATION_PROCESS, reservationModel);
 
+        /*
         var notificationModel = SendNotificationModel.orderCreated(orderId, order.getEmail());
-        kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);*/
+        kafkaProducerService.send(BusinessTopics.NOTIFICATION_SEND, notificationModel);
 
         var userId = order.getUserId();
         var amount = order.getTotalPrice();
         var paymentModel = PaymentProcessModel.init(orderId, userId, amount);
-        kafkaProducerService.send(BusinessTopics.ORDER_PAYMENT_PROCESS, paymentModel);
+        kafkaProducerService.send(BusinessTopics.ORDER_PAYMENT_PROCESS, paymentModel);*/
 
         return createdOrder;
     }
@@ -103,10 +103,31 @@ public class OrderProcessorService {
         var status = model.getStatus();
         if (ProcessStatus.SUCCESS == status) {
             log.debug("Successfully paid for the order with id {}", orderId);
-            orderStateMachineService.startCookingAction(order);
+            orderStateMachineService.startDeliveryAction(order);
         } else {
             log.warn("Failed to pay for the order {}", orderId);
             orderStateMachineService.cancelOrderAction(order, OrderEvent.PAYMENT_FAILED);
+        }
+    }
+
+    @Transactional
+    public void handleDeliveryConfirmation(DeliveryConfirmationModel model) {
+        var orderId = model.getOrderId();
+        var orderOpt = orderRepository.findByIdForUpdate(orderId);
+        if (orderOpt.isEmpty()) {
+            log.error("Order not found for delivery confirmation for: {}. Skip it", model);
+            return;
+        }
+
+        var order = orderOpt.get();
+
+        var status = model.getStatus();
+        if (ProcessStatus.SUCCESS == status) {
+            log.debug("Successfully processed delivery for the order with id {}", orderId);
+            orderStateMachineService.startCookingAction(order);
+        } else {
+            log.warn("Failed to process delivery for the order {}", orderId);
+            orderStateMachineService.cancelOrderAction(order, OrderEvent.DELIVERY_FAILED);
         }
     }
 

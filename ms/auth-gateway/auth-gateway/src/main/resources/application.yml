@@ -32,6 +32,18 @@ spring:
           uri: http://localhost:8086
           predicates:
             - Path=/api/internal/notification/**
+        - id: payment-service-internal
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/internal/payment/**
+        - id: delivery-service-internal
+          uri: http://localhost:8087
+          predicates:
+            - Path=/api/internal/delivery/**
+        - id: inventory-service-internal
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/internal/inventory/**
 
 
 jwt:

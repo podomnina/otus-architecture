@@ -50,7 +50,7 @@ kubectl apply -f ingress.yaml
 `minikube tunnel`
 
 ### Для доступа до БД по localhost
-`kubectl port-forward svc/otus-postgres-postgres 5432:5432`
+`kubectl port-forward svc/otus-postgres-postgres 5432:5432 --namespace otus`
 
 ## 5. Prometheus. Grafana
 ### Установить Prometheus
@@ -148,20 +148,52 @@ helm upgrade -i payment-service ./charts/apps/payment-service --namespace otus -
 ### Запустить postman коллекцию
 `newman run ./postman/OTUS.postman_collection.json --folder "24. RESTful" --verbose`
 
+## 8. Распределенные транзакции
+### Собрать проект
+`mvn package`
+### Собрать и запушить docker образы приложений
+```
+docker image build --platform linux/amd64 -t podomnina/auth-service:13 .
+docker image build --platform linux/amd64 -t podomnina/auth-gateway:13 .
+docker image build --platform linux/amd64 -t podomnina/delivery-service:13 .
+docker image build --platform linux/amd64 -t podomnina/inventory-service:13 .
+docker image build --platform linux/amd64 -t podomnina/order-service:14 .
+docker image build --platform linux/amd64 -t podomnina/payment-service:13 .
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+docker push podomnina/auth-service:13
+docker push podomnina/auth-gateway:13
+docker push podomnina/delivery-service:13
+docker push podomnina/inventory-service:13
+docker push podomnina/order-service:14
+docker push podomnina/payment-service:13
+```
+### Создать namespace
+`kubectl create namespace otus`
+### Установить ingress
+```
+helm install nginx ingress-nginx/ingress-nginx --namespace otus -f nginx-ingress.yaml
+kubectl apply -f ./charts/ingress/ingress.yaml
+helm upgrade --install nginx ingress-nginx/ingress-nginx --namespace otus -f ./charts/ingress/values.yaml
+```
+### Установить постгрес
+```
+helm install otus-postgres ./charts/components/postgres --namespace otus -f ./charts/components/postgres/values.yaml
+```
+### Установить Kafka
+```
+helm upgrade -i my-kafka oci://registry-1.docker.io/bitnamicharts/kafka -n otus --set service.port=9092 --set auth.enabled=false --set auth.clientProtocol=plaintext --set kafka.autoCreateTopicsEnable=true --set listeners.client.protocol=plaintext
+```
+### Установить приложения
+```
+helm upgrade -i auth-gateway ./charts/apps/auth-gateway --namespace otus --atomic -f ./charts/apps/auth-gateway/values.yaml
+helm upgrade -i auth-service ./charts/apps/auth-service --namespace otus --atomic -f ./charts/apps/auth-service/values.yaml
+helm upgrade -i delivery-service ./charts/apps/delivery-service --namespace otus --atomic -f ./charts/apps/delivery-service/values.yaml
+helm upgrade -i inventory-service ./charts/apps/inventory-service --namespace otus --atomic -f ./charts/apps/inventory-service/values.yaml
+helm upgrade -i order-service ./charts/apps/order-service --namespace otus --atomic -f ./charts/apps/order-service/values.yaml
+helm upgrade -i payment-service ./charts/apps/payment-service --namespace otus --atomic -f ./charts/apps/payment-service/values.yaml
+```
+### Запустить postman коллекцию
+`newman run ./postman/OTUS.postman_collection.json --folder "28. Распределенные транзакции" --verbose`
 
 
 

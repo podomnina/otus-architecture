@@ -135,6 +135,11 @@
                 <artifactId>notification-service-db</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>ru.otus</groupId>
+                <artifactId>delivery-service-db</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>ru.otus</groupId>

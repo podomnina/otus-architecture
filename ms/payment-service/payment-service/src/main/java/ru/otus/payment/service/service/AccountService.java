@@ -8,6 +8,7 @@ import ru.otus.common.error.BusinessAppException;
 import ru.otus.lib.kafka.model.CreateAccountModel;
 import ru.otus.lib.kafka.model.PaymentConfirmationModel;
 import ru.otus.lib.kafka.model.PaymentProcessModel;
+import ru.otus.lib.kafka.model.PaymentRollbackModel;
 import ru.otus.lib.kafka.service.BusinessTopics;
 import ru.otus.lib.kafka.service.KafkaProducerService;
 import ru.otus.payment.service.mapper.AccountMapper;
@@ -96,6 +97,19 @@ public class AccountService {
             var successModel = PaymentConfirmationModel.success(orderId);
             kafkaProducerService.send(BusinessTopics.ORDER_PAYMENT_CONFIRMATION, successModel);
             return;
+        }
+    }
+
+    @Transactional
+    public void handlePaymentRollback(PaymentRollbackModel model) {
+        var orderId = model.getOrderId();
+        var paymentOpt = paymentRepository.findByOrderId(orderId);
+        if (paymentOpt.isPresent()) {
+            var payment = paymentOpt.get();
+            var account = payment.getAccount();
+            account.setAmount(account.getAmount().add(payment.getAmount()));
+            repository.save(account);
+            paymentRepository.delete(payment);
         }
     }
 

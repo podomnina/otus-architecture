@@ -6,6 +6,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import ru.otus.lib.kafka.model.CreateAccountModel;
 import ru.otus.lib.kafka.model.PaymentProcessModel;
+import ru.otus.lib.kafka.model.PaymentRollbackModel;
 import ru.otus.lib.kafka.service.BusinessTopics;
 
 @Slf4j
@@ -33,6 +34,17 @@ public class PaymentKafkaConsumerService {
             service.handleCreateAccount(model);
         } catch (Exception e) {
             log.error("Error while processing new account creation", e);
+            throw e;
+        }
+    }
+
+    @KafkaListener(topics = BusinessTopics.ORDER_PAYMENT_ROLLBACK, groupId = "${spring.kafka.consumer.group-id}")
+    public void listenOrderPaymentRollback(PaymentRollbackModel model) {
+        log.debug("Received payment rollback: {}", model);
+        try {
+            service.handlePaymentRollback(model);
+        } catch (Exception e) {
+            log.error("Error while processing order payment rollback", e);
             throw e;
         }
     }

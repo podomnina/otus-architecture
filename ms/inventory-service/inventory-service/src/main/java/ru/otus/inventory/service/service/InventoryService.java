@@ -7,7 +7,9 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import ru.otus.common.error.BusinessAppException;
 import ru.otus.inventory.lib.api.ProductBalanceResponseDto;
+import ru.otus.inventory.service.model.dto.ReservedInfoDto;
 import ru.otus.inventory.service.model.entity.Inventory;
 import ru.otus.inventory.service.model.entity.ReservedProduct;
 import ru.otus.inventory.service.model.entity.ReservedProductId;
@@ -88,7 +90,8 @@ public class InventoryService {
             cachedRecipes.putAll(freshRecipes.getDishProductQuantityMap());
         }*/
 
-        var recipes = menuServiceClient.getRecipes(dishIds);
+        //dishId = 1, productId = 1, product quantity = 3
+        var recipes = new RecipeResponseDto(Map.of(1, Map.of(1, 3))); //menuServiceClient.getRecipes(dishIds);
 
         var productQuantityList = recipes.getDishProductQuantityMap().entrySet().stream()
                 .map(dpqEntry -> {
@@ -201,6 +204,22 @@ public class InventoryService {
 
         reservedProductRepository.deleteAllByOrderId(orderId);
     }
+
+    public ReservedInfoDto getReservedInfo(Integer orderId) {
+        var records = reservedProductRepository.findAllByOrderId(orderId);
+        if (CollectionUtils.isEmpty(records)) {
+            throw new BusinessAppException("inventory.reserved.not.found", "Зарезервированные продукты для этого заказа не найдены");
+        }
+
+        var items = records.stream()
+                .map(r -> ReservedInfoDto.Item.builder()
+                        .productId(r.getId().getProductId())
+                        .quantity(r.getQuantity())
+                        .build())
+                .collect(Collectors.toList());
+        return new ReservedInfoDto(orderId, items);
+    }
+
 /*
     private Map<Integer, Map<Integer, Integer>> getCachedRecipes(List<Integer> ids) {
         Cache cache = cacheManager.getCache(RECIPE_CASH_NAME);

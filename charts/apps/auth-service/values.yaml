@@ -4,7 +4,7 @@ service:
 replicaCount: 1
 
 auth_service:
-  image: podomnina/auth-service:11
+  image: podomnina/auth-service:13
   config:
     db:
       url: jdbc:postgresql://otus-postgres-postgres:5432/otus

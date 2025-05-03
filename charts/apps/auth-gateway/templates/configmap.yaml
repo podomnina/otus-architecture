@@ -36,3 +36,15 @@ data:
               uri: http://notification-service:8080
               predicates:
                 - Path=/api/internal/notification/**
+            - id: payment-service-internal
+              uri: http://payment-service:8080
+              predicates:
+                - Path=/api/internal/payment/**
+            - id: delivery-service-internal
+              uri: http://delivery-service:8080
+              predicates:
+                - Path=/api/internal/delivery/**
+            - id: inventory-service-internal
+              uri: http://inventory-service:8080
+              predicates:
+                - Path=/api/internal/inventory/**

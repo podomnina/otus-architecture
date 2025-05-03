@@ -4,10 +4,10 @@ service:
 replicaCount: 1
 
 inventory_service:
-  image: podomnina/inventory-service:9
+  image: podomnina/inventory-service:13
   config:
     db:
-      url: jdbc:postgresql://otus-postgres-postgres:5432/inventory
+      url: jdbc:postgresql://otus-postgres-postgres:5432/otus
       secretName: inventory-service-pg-secret
       username: otus_user
       password: NVB1c6hB6vF7

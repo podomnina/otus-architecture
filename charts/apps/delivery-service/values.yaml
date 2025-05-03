@@ -1,0 +1,23 @@
+service:
+  port: 8080
+
+replicaCount: 1
+
+delivery_service:
+  image: podomnina/delivery-service:13
+  config:
+    db:
+      url: jdbc:postgresql://otus-postgres-postgres:5432/otus
+      secretName: delivery-service-pg-secret
+      username: otus_user
+      password: NVB1c6hB6vF7
+    kafka:
+      bootstrapServers: my-kafka.otus.svc.cluster.local:9092
+
+resources:
+  requests:
+    cpu: "100m"
+    memory: "256Mi"
+  limits:
+    cpu: "1000m"
+    memory: "1024Mi"

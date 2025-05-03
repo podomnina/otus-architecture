@@ -63,5 +63,8 @@
 		<module>ms/notification-service/notification-service-db</module>
 		<module>ms/notification-service/notification-service</module>
 
+		<module>ms/delivery-service/delivery-service-db</module>
+		<module>ms/delivery-service/delivery-service</module>
+
 	</modules>
 </project>

@@ -12,4 +12,6 @@ import java.util.UUID;
 public interface PaymentRepository extends JpaRepository<Payment, UUID> {
 
     boolean existsByOrderIdAndAccountUserId(Integer orderId, UUID accountId);
+
+    Optional<Payment> findByOrderId(Integer orderId);
 }

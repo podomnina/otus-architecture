@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.otus.inventory.lib.api.InventoryServiceClient;
 import ru.otus.inventory.lib.api.ProductBalanceResponseDto;
+import ru.otus.inventory.service.model.dto.ReservedInfoDto;
 import ru.otus.inventory.service.service.InventoryService;
 
 import java.util.List;
@@ -27,6 +28,11 @@ public class InternalInventoryController implements InventoryServiceClient {
     public ProductBalanceResponseDto getActualBalance(@RequestParam List<Integer> productIds) {
         log.debug("Trying to check balance for products with ids: {}", productIds);
         return service.getBalance(productIds);
+    }
+
+    @GetMapping("/reserved")
+    public ReservedInfoDto getReservedInfo(@RequestParam Integer orderId) {
+        return service.getReservedInfo(orderId);
     }
 
 }

@@ -4,7 +4,7 @@ service:
 replicaCount: 1
 
 payment_service:
-  image: podomnina/payment-service:11
+  image: podomnina/payment-service:13
   config:
     db:
       url: jdbc:postgresql://otus-postgres-postgres:5432/otus

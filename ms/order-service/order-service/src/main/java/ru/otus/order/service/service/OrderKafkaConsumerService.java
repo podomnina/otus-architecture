@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import ru.otus.lib.kafka.model.DeliveryConfirmationModel;
 import ru.otus.lib.kafka.model.PaymentConfirmationModel;
 import ru.otus.lib.kafka.model.ReservationConfirmationModel;
 import ru.otus.lib.kafka.service.BusinessTopics;
@@ -33,6 +34,17 @@ public class OrderKafkaConsumerService {
             service.handlePaymentConfirmation(model);
         } catch (Exception e) {
             log.error("Error while processing order payment confirmation", e);
+            throw e;
+        }
+    }
+
+    @KafkaListener(topics = BusinessTopics.ORDER_DELIVERY_CONFIRMATION, groupId = "${spring.kafka.consumer.group-id}")
+    public void listenOrderDeliveryConfirmation(DeliveryConfirmationModel model) {
+        log.debug("Received new delivery confirmation: {}", model);
+        try {
+            service.handleDeliveryConfirmation(model);
+        } catch (Exception e) {
+            log.error("Error while processing order delivery confirmation", e);
             throw e;
         }
     }
